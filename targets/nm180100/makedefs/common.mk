@@ -44,7 +44,7 @@ CFLAGS_REL += $(CFLAGS)
 CFLAGS_REL += -Os
 
 LFLAGS  = -mthumb -mcpu=$(CPU) -mfpu=$(FPU) -mfloat-abi=$(FABI)
-LFLAGS += -nostartfiles -static
+LFLAGS += -static
 
 OCPFLAGS = -Obinary
 ODFLAGS  = -S
