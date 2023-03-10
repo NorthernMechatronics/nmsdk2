@@ -35,7 +35,7 @@
 #define WSF_OS_CLOCK_SOURCE     AM_HAL_STIMER_XTAL_32KHZ
 #define WSF_OS_CLOCK_PERIOD     32768
 
-#define WSF_HEAP_SIZE           0x4000
+#define WSF_HEAP_SIZE           0x8000
 
 #define WSF_NVM_NUM_OF_PAGES    2
 #define WSF_NVM_PAGE_SIZE       AM_HAL_FLASH_PAGE_SIZE
