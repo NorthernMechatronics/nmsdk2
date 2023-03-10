@@ -285,7 +285,7 @@ uint8_t *HciGetSupStates(void)
  *  \return Supported features.
  */
 /*************************************************************************************************/
-uint32_t HciGetLeSupFeat(void)
+uint64_t HciGetLeSupFeat(void)
 {
   // disable LL connection parameter update feature for a better
   // interoperability with Android phones (especially older Android OS).

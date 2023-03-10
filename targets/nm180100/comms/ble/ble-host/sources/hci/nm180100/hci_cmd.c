@@ -1550,6 +1550,27 @@ void HciLeSetPrivacyModeCmd(uint8_t addrType, uint8_t *pAddr, uint8_t mode)
   }
 }
 
+/*************************************************************************************************/
+/*!
+ *  \brief      HCI LE request peer SCA command.
+ *
+ *  \param      handle    Connection handle.
+ *
+ *  \return     None.
+ */
+/*************************************************************************************************/
+void HciLeRequestPeerScaCmd(uint16_t handle)
+{
+  uint8_t *pBuf;
+  uint8_t *p;
+
+  if ((pBuf = hciCmdAlloc(HCI_OPCODE_LE_REQUEST_PEER_SCA, HCI_LEN_LE_REQUEST_PEER_SCA)) != NULL)
+  {
+    p = pBuf + HCI_CMD_HDR_LEN;
+    UINT16_TO_BSTREAM(p, handle);
+    hciCmdSend(pBuf);
+  }
+}
 
 /*************************************************************************************************/
 /*!

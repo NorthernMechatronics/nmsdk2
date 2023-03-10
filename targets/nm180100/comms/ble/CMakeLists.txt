@@ -24,24 +24,56 @@ target_compile_options(
 set(
 	BLE_INCLUDES
 	${BLE_DIR}/ble-profiles/include
-	${BLE_DIR}/ble-profiles/include/app
-	${BLE_DIR}/ble-profiles/sources/apps/app
-
-	${BLE_DIR}/ble-profiles/sources/profiles/include
+	${BLE_DIR}/ble-profiles/sources/af
 	${BLE_DIR}/ble-profiles/sources/profiles
-
+	${BLE_DIR}/ble-profiles/sources/profiles/anpc
+	${BLE_DIR}/ble-profiles/sources/profiles/atpc
+	${BLE_DIR}/ble-profiles/sources/profiles/atps
+	${BLE_DIR}/ble-profiles/sources/profiles/bas
+	${BLE_DIR}/ble-profiles/sources/profiles/blpc
+	${BLE_DIR}/ble-profiles/sources/profiles/blps
+	${BLE_DIR}/ble-profiles/sources/profiles/cpp
+	${BLE_DIR}/ble-profiles/sources/profiles/cscp
+	${BLE_DIR}/ble-profiles/sources/profiles/dis
+	${BLE_DIR}/ble-profiles/sources/profiles/fmpl
+	${BLE_DIR}/ble-profiles/sources/profiles/gap
+	${BLE_DIR}/ble-profiles/sources/profiles/gatt
+	${BLE_DIR}/ble-profiles/sources/profiles/glpc
+	${BLE_DIR}/ble-profiles/sources/profiles/glps
+	${BLE_DIR}/ble-profiles/sources/profiles/hid
+	${BLE_DIR}/ble-profiles/sources/profiles/hrpc
+	${BLE_DIR}/ble-profiles/sources/profiles/hrps
+	${BLE_DIR}/ble-profiles/sources/profiles/htpc
+	${BLE_DIR}/ble-profiles/sources/profiles/htps
+	${BLE_DIR}/ble-profiles/sources/profiles/include
+	${BLE_DIR}/ble-profiles/sources/profiles/paspc
+	${BLE_DIR}/ble-profiles/sources/profiles/plxpc
+	${BLE_DIR}/ble-profiles/sources/profiles/plxps
+	${BLE_DIR}/ble-profiles/sources/profiles/rscp
+	${BLE_DIR}/ble-profiles/sources/profiles/scpps
+	${BLE_DIR}/ble-profiles/sources/profiles/sensor
+	${BLE_DIR}/ble-profiles/sources/profiles/tipc
+	${BLE_DIR}/ble-profiles/sources/profiles/udsc
+	${BLE_DIR}/ble-profiles/sources/profiles/uribeacon
+	${BLE_DIR}/ble-profiles/sources/profiles/wdxc
+	${BLE_DIR}/ble-profiles/sources/profiles/wdxs
+	${BLE_DIR}/ble-profiles/sources/profiles/wpc
+	${BLE_DIR}/ble-profiles/sources/profiles/wspc
+	${BLE_DIR}/ble-profiles/sources/profiles/wsps
 	${BLE_DIR}/ble-profiles/sources/services
 
 	${BLE_DIR}/ble-host/include
+	${BLE_DIR}/ble-host/sources/sec/common
 	${BLE_DIR}/ble-host/sources/stack/att
 	${BLE_DIR}/ble-host/sources/stack/cfg
 	${BLE_DIR}/ble-host/sources/stack/dm
 	${BLE_DIR}/ble-host/sources/stack/hci
 	${BLE_DIR}/ble-host/sources/stack/l2c
 	${BLE_DIR}/ble-host/sources/stack/smp
-#	${BLE_DIR}/ble-host/sources/hci/dual_chip
  
 	${BLE_DIR}/thirdparty/uecc
+
+	${BLE_DIR}/platform/include
 
 	${BLE_TARGET_DIR}/wsf/include
 	${BLE_TARGET_DIR}/wsf/include/util
@@ -58,24 +90,25 @@ target_include_directories(
 
 target_sources(
     ble PRIVATE 
-	${BLE_DIR}/ble-profiles/sources/apps/app/app_disc.c
-	${BLE_DIR}/ble-profiles/sources/apps/app/app_main.c
-	${BLE_DIR}/ble-profiles/sources/apps/app/app_master.c
-	${BLE_DIR}/ble-profiles/sources/apps/app/app_master_ae.c
-	${BLE_DIR}/ble-profiles/sources/apps/app/app_master_leg.c
-	${BLE_DIR}/ble-profiles/sources/apps/app/app_server.c
-	${BLE_DIR}/ble-profiles/sources/apps/app/app_slave.c
-	${BLE_DIR}/ble-profiles/sources/apps/app/app_slave_ae.c
-	${BLE_DIR}/ble-profiles/sources/apps/app/app_slave_leg.c
-	${BLE_DIR}/ble-profiles/sources/apps/app/app_terminal.c
-	${BLE_DIR}/ble-profiles/sources/apps/app/common/app_db.c
-	${BLE_DIR}/ble-profiles/sources/apps/app/common/app_hw.c
-	${BLE_DIR}/ble-profiles/sources/apps/app/common/app_ui.c
-	${BLE_DIR}/ble-profiles/sources/apps/app/common/ui_console.c
-	${BLE_DIR}/ble-profiles/sources/apps/app/common/ui_lcd.c
-	${BLE_DIR}/ble-profiles/sources/apps/app/common/ui_main.c
-	${BLE_DIR}/ble-profiles/sources/apps/app/common/ui_platform.c
-	${BLE_DIR}/ble-profiles/sources/apps/app/common/ui_timer.c
+	${BLE_DIR}/ble-profiles/sources/af/app_disc.c
+	${BLE_DIR}/ble-profiles/sources/af/app_main.c
+	${BLE_DIR}/ble-profiles/sources/af/app_master.c
+	${BLE_DIR}/ble-profiles/sources/af/app_master_ae.c
+	${BLE_DIR}/ble-profiles/sources/af/app_master_leg.c
+	${BLE_DIR}/ble-profiles/sources/af/app_server.c
+	${BLE_DIR}/ble-profiles/sources/af/app_slave.c
+	${BLE_DIR}/ble-profiles/sources/af/app_slave_ae.c
+	${BLE_DIR}/ble-profiles/sources/af/app_slave_leg.c
+	${BLE_DIR}/ble-profiles/sources/af/app_terminal.c
+
+	${BLE_DIR}/ble-profiles/sources/af/common/app_db.c
+	${BLE_DIR}/ble-profiles/sources/af/common/app_hw.c
+	${BLE_DIR}/ble-profiles/sources/af/common/app_ui.c
+	${BLE_DIR}/ble-profiles/sources/af/common/ui_console.c
+	${BLE_DIR}/ble-profiles/sources/af/common/ui_lcd.c
+	${BLE_DIR}/ble-profiles/sources/af/common/ui_main.c
+	${BLE_DIR}/ble-profiles/sources/af/common/ui_platform.c
+	${BLE_DIR}/ble-profiles/sources/af/common/ui_timer.c
 
 	${BLE_DIR}/ble-profiles/sources/profiles/anpc/anpc_main.c
 	${BLE_DIR}/ble-profiles/sources/profiles/atpc/atpc_main.c

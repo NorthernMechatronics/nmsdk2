@@ -126,7 +126,7 @@ const uint8_t hciEventMaskPage2[HCI_EVT_MASK_PAGE_2_LEN] =
 };
 
 /* LE supported features configuration mask */
-uint32_t hciLeSupFeatCfg =
+uint64_t hciLeSupFeatCfg =
   HCI_LE_SUP_FEAT_ENCRYPTION                 |    /* LE Encryption */
   HCI_LE_SUP_FEAT_CONN_PARAM_REQ_PROC        |    /* Connection Parameters Request Procedure */
   HCI_LE_SUP_FEAT_EXT_REJECT_IND             |    /* Extended Reject Indication */
@@ -864,7 +864,7 @@ void HciSetAclQueueWatermarks(uint8_t queueHi, uint8_t queueLo)
 *  \return None.
 */
 /*************************************************************************************************/
-void HciSetLeSupFeat(uint32_t feat, bool_t flag)
+void HciSetLeSupFeat(uint64_t feat, bool_t flag)
 {
   /* if asked to include feature */
   if (flag)
