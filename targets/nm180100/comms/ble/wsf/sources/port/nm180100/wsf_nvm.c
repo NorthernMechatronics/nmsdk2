@@ -21,6 +21,8 @@
  *  limitations under the License.
  */
 /*************************************************************************************************/
+#include <am_mcu_apollo.h>
+#include <string.h>
 
 #include "wsf_types.h"
 #include "wsf_assert.h"
