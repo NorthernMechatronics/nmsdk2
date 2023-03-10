@@ -1,22 +1,27 @@
 /*************************************************************************************************/
 /*!
- *  \file   hci_core.c
+ *  \file
  *
  *  \brief  HCI core module, platform independent functions.
  *
- *          $Date: 2017-03-10 14:08:37 -0600 (Fri, 10 Mar 2017) $
- *          $Revision: 11501 $
+ *  Copyright (c) 2009-2018 Arm Ltd. All Rights Reserved.
  *
- *  Copyright (c) 2009-2017 ARM Ltd., all rights reserved.
- *  ARM Ltd. confidential and proprietary.
+ *  Copyright (c) 2019-2020 Packetcraft, Inc.
+ *  
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *  
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  *
- *  IMPORTANT.  Your use of this file is governed by a Software License Agreement
- *  ("Agreement") that must be accepted in order to download or otherwise receive a
- *  copy of this file.  You may not use or copy this file for any purpose other than
- *  as described in the Agreement.  If you do not agree to all of the terms of the
- *  Agreement do not use this file and delete all copies in your possession or control;
- *  if you do not have a copy of the Agreement, you must contact ARM Ltd. prior
- *  to any use, copying or further distribution of this software.
+ * This module implements core platform independent HCI features for transmit data path,
+ * fragmentation, reassembly, and connection management.
  */
 /*************************************************************************************************/
 
@@ -25,8 +30,8 @@
 #include "wsf_msg.h"
 #include "wsf_trace.h"
 #include "wsf_assert.h"
-#include "bda.h"
-#include "bstream.h"
+#include "util/bda.h"
+#include "util/bstream.h"
 #include "hci_core.h"
 #include "hci_tr.h"
 #include "hci_cmd.h"
@@ -101,12 +106,21 @@ const uint8_t hciLeEventMask[HCI_LE_EVT_MASK_LEN] =
   HCI_EVT_MASK_LE_SCAN_TIMEOUT_EVT |              /* Byte 2 */
   HCI_EVT_MASK_LE_ADV_SET_TERM_EVT |              /* Byte 2 */
   HCI_EVT_MASK_LE_SCAN_REQ_RCVD_EVT |             /* Byte 2 */
-  HCI_EVT_MASK_LE_CH_SEL_ALGO_EVT|                /* Byte 2 */
-  HCI_EVT_MASK_LE_CONNLESS_IQ_REPORT_EVT|         /* Byte 2 */
-  HCI_EVT_MASK_LE_CONN_IQ_REPORT_EVT|             /* Byte 2 */
-  HCI_EVT_MASK_LE_CTE_REQ_FAILED_EVT,             /* Byte 2 */
-  0,                                              /* Byte 3 */
-  0,                                              /* Byte 4 */
+  HCI_EVT_MASK_LE_CH_SEL_ALGO_EVT |               /* Byte 2 */
+  HCI_EVT_MASK_LE_CONN_IQ_REPORT_EVT |            /* Byte 2 */
+//  HCI_EVT_MASK_LE_CONNLESS_IQ_REPORT_EVT |        /* Byte 2 */
+  HCI_EVT_MASK_LE_CTE_REQ_FAILED_EVT |            /* Byte 2 */
+  HCI_EVT_MASK_LE_PER_SYNC_TRSF_RCVT_EVT,         /* Byte 2 */
+  HCI_EVT_MASK_LE_CIS_EST_EVT |                   /* Byte 3 */
+  HCI_EVT_MASK_LE_CIS_REQ_EVT |                   /* Byte 3 */
+  HCI_EVT_MASK_LE_CREATE_BIG_CMPL_EVT|            /* Byte 3 */
+  HCI_EVT_MASK_LE_TERMINATE_BIG_CMPL_EVT |        /* Byte 3 */
+  HCI_EVT_MASK_LE_BIG_SYNC_EST_EVT |              /* Byte 3 */
+  HCI_EVT_MASK_LE_BIG_SYNC_LOST_EVT |             /* Byte 3 */
+  HCI_EVT_MASK_LE_PEER_SCA_CMPL_EVT |             /* Byte 3 */
+  HCI_EVT_MASK_LE_PATH_LOSS_REPORT_EVT,           /* Byte 3 */
+  HCI_EVT_MASK_LE_TX_POWER_REPORT_EVT |           /* Byte 4 */
+  HCI_EVT_MASK_LE_BIG_INFO_ADV_RPT_EVT,           /* Byte 4 */
   0,                                              /* Byte 5 */
   0,                                              /* Byte 6 */
   0                                               /* Byte 7 */
@@ -126,7 +140,7 @@ const uint8_t hciEventMaskPage2[HCI_EVT_MASK_PAGE_2_LEN] =
 };
 
 /* LE supported features configuration mask */
-uint32_t hciLeSupFeatCfg =
+uint64_t hciLeSupFeatCfg =
   HCI_LE_SUP_FEAT_ENCRYPTION                 |    /* LE Encryption */
   HCI_LE_SUP_FEAT_CONN_PARAM_REQ_PROC        |    /* Connection Parameters Request Procedure */
   HCI_LE_SUP_FEAT_EXT_REJECT_IND             |    /* Extended Reject Indication */
@@ -150,8 +164,6 @@ hciCoreCb_t hciCoreCb;
 
 /*************************************************************************************************/
 /*!
- *  \fn     hciCoreConnAlloc
- *
  *  \brief  Allocate a connection structure.
  *
  *  \param  handle  Connection handle.
@@ -184,8 +196,6 @@ static void hciCoreConnAlloc(uint16_t handle)
 
 /*************************************************************************************************/
 /*!
- *  \fn     hciCoreConnFree
- *
  *  \brief  Free a connection structure.
  *
  *  \param  handle  Connection handle.
@@ -234,8 +244,6 @@ static void hciCoreConnFree(uint16_t handle)
 
 /*************************************************************************************************/
 /*!
- *  \fn     hciCoreConnByHandle
- *
  *  \brief  Get a connection structure by handle
  *
  *  \param  handle  Connection handle.
@@ -262,8 +270,6 @@ hciCoreConn_t *hciCoreConnByHandle(uint16_t handle)
 
 /*************************************************************************************************/
 /*!
- *  \fn     hciCoreNextConnFragment
- *
  *  \brief  Get the next connection structure with a packet fragment to send.
  *
  *  \return Pointer to connection structure or NULL if not found.
@@ -288,8 +294,6 @@ static hciCoreConn_t *hciCoreNextConnFragment(void)
 
 /*************************************************************************************************/
 /*!
- *  \fn     hciCoreConnOpen
- *
  *  \brief  Perform internal processing on HCI connection open.
  *
  *  \param  handle  Connection handle.
@@ -305,8 +309,6 @@ void hciCoreConnOpen(uint16_t handle)
 
 /*************************************************************************************************/
 /*!
- *  \fn     hciCoreConnClose
- *
  *  \brief  Perform internal processing on HCI connection close.
  *
  *  \param  handle  Connection handle.
@@ -320,17 +322,128 @@ void hciCoreConnClose(uint16_t handle)
   hciCoreConnFree(handle);
 }
 
+/*************************************************************************************************/
+/*!
+ *  \brief  Allocate a CIS connection structure.
+ *
+ *  \param  handle  Connection handle.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+static void hciCoreCisAlloc(uint16_t handle)
+{
+  uint8_t         i;
+  hciCoreCis_t   *pCis = hciCoreCb.cis;
+
+  /* find available connection struct */
+  for (i = DM_CIS_MAX; i > 0; i--, pCis++)
+  {
+    if (pCis->handle == HCI_HANDLE_NONE)
+    {
+      /* allocate and initialize */
+      pCis->handle = handle;
+
+      return;
+    }
+  }
+
+  HCI_TRACE_WARN0("HCI cis struct alloc failure");
+}
 
 /*************************************************************************************************/
 /*!
- *  \fn     hciCoreSendAclData
+ *  \brief  Free a CIS connection structure.
  *
+ *  \param  handle  Connection handle.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+static void hciCoreCisFree(uint16_t handle)
+{
+  uint8_t         i;
+  hciCoreCis_t   *pCis = hciCoreCb.cis;
+
+  /* find connection struct */
+  for (i = DM_CIS_MAX; i > 0; i--, pCis++)
+  {
+    if (pCis->handle == handle)
+    {
+      /* free structure */
+      pCis->handle = HCI_HANDLE_NONE;
+
+      return;
+    }
+  }
+
+  HCI_TRACE_WARN1("hciCoreCisFree handle not found:%u", handle);
+}
+
+/*************************************************************************************************/
+/*!
+ *  \brief  Get a CIS connection structure by handle
+ *
+ *  \param  handle  Connection handle.
+ *
+ *  \return Pointer to CIS connection structure or NULL if not found.
+ */
+/*************************************************************************************************/
+hciCoreCis_t *hciCoreCisByHandle(uint16_t handle)
+{
+  uint8_t         i;
+  hciCoreCis_t   *pCis = hciCoreCb.cis;
+
+  /* find available connection struct */
+  for (i = DM_CIS_MAX; i > 0; i--, pCis++)
+  {
+    if (pCis->handle == handle)
+    {
+      return pCis;
+    }
+  }
+
+  return NULL;
+}
+
+/*************************************************************************************************/
+/*!
+ *  \brief  Perform internal processing on HCI CIS connection open.
+ *
+ *  \param  handle  Connection handle.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+void hciCoreCisOpen(uint16_t handle)
+{
+  /* allocate CIS connection structure */
+  hciCoreCisAlloc(handle);
+}
+
+/*************************************************************************************************/
+/*!
+ *  \brief  Perform internal processing on HCI CIS connection close.
+ *
+ *  \param  handle  Connection handle.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+void hciCoreCisClose(uint16_t handle)
+{
+  /* free CIS connection structure */
+  hciCoreCisFree(handle);
+}
+
+/*************************************************************************************************/
+/*!
  *  \brief  Send ACL data to transport.
  *
  *  \param  pConn    Pointer to connection structure.
  *  \param  pData    WSF buffer containing an ACL packet.
  *
- *  \return TRUE if packet sent, FALSE otherwise.
+ *  \return None.
  */
 /*************************************************************************************************/
 void hciCoreSendAclData(hciCoreConn_t *pConn, uint8_t *pData)
@@ -355,13 +468,11 @@ void hciCoreSendAclData(hciCoreConn_t *pConn, uint8_t *pData)
 
 /*************************************************************************************************/
 /*!
- *  \fn     hciCoreTxReady
- *
  *  \brief  Service the TX data path.
  *
  *  \param  bufs    Number of new buffers now available.
  *
- *  \return TRUE if any pending hci ACL packet sent successfully.
+ *  \return None.
  */
 /*************************************************************************************************/
 void hciCoreTxReady(uint8_t bufs)
@@ -426,15 +537,13 @@ void hciCoreTxReady(uint8_t bufs)
 
 /*************************************************************************************************/
 /*!
- *  \fn     hciCoreTxAclStart
- *
  *  \brief  Send ACL packets, start of packet.
  *
  *  \param  pConn    Pointer to connection structure.
  *  \param  len      ACL packet length.
  *  \param  pData    WSF buffer containing an ACL packet.
  *
- *  \return TRUE if packet sent, FALSE otherwise.
+ *  \return None.
  */
 /*************************************************************************************************/
 void hciCoreTxAclStart(hciCoreConn_t *pConn, uint16_t len, uint8_t *pData)
@@ -476,8 +585,6 @@ void hciCoreTxAclStart(hciCoreConn_t *pConn, uint16_t len, uint8_t *pData)
 
 /*************************************************************************************************/
 /*!
- *  \fn     hciCoreTxAclContinue
- *
  *  \brief  Send ACL packets, continuation of fragmented packets.
  *
  *  \param  pConn    Pointer to connection structure.  If set non-NULL, then a fragment is
@@ -533,8 +640,6 @@ bool_t hciCoreTxAclContinue(hciCoreConn_t *pConn)
 
 /*************************************************************************************************/
 /*!
- *  \fn     hciCoreTxAclComplete
- *
  *  \brief  This function is called from the HCI transport layer when transmission of an ACL
  *          packet is complete.
  *
@@ -567,8 +672,6 @@ void hciCoreTxAclComplete(hciCoreConn_t *pConn, uint8_t *pData)
 
 /*************************************************************************************************/
 /*!
- *  \fn     hciCoreAclReassembly
- *
  *  \brief  Reassemble an ACL packet.
  *
  *  \param  pData   Input ACL packet.
@@ -614,7 +717,7 @@ uint8_t *hciCoreAclReassembly(uint8_t *pData)
         /* check length vs. configured maximum */
         if ((l2cLen + L2C_HDR_LEN) > hciCoreCb.maxRxAclLen)
         {
-          HCI_TRACE_WARN1("l2c len=0x%04x to large for reassembly", l2cLen);
+          HCI_TRACE_WARN2("l2c len=0x%04x to large for reassembly - max: 0x%04x", l2cLen, hciCoreCb.maxRxAclLen - L2C_HDR_LEN);
         }
         /* if reassembly required */
         else if ((l2cLen + L2C_HDR_LEN) > aclLen)
@@ -707,8 +810,6 @@ uint8_t *hciCoreAclReassembly(uint8_t *pData)
 
 /*************************************************************************************************/
 /*!
- *  \fn     hciCoreTxAclDataFragmented
- *
  *  \brief  Check if a TX ACL packet is being fragmented.
  *
  *  \param  pContext Connection context.
@@ -723,8 +824,6 @@ bool_t hciCoreTxAclDataFragmented(hciCoreConn_t *pConn)
 
 /*************************************************************************************************/
 /*!
- *  \fn     HciCoreInit
- *
  *  \brief  HCI core initialization.
  *
  *  \return None.
@@ -741,6 +840,10 @@ void HciCoreInit(void)
     hciCoreCb.conn[i].handle = HCI_HANDLE_NONE;
   }
 
+  for (i = 0; i < DM_CIS_MAX; i++)
+  {
+    hciCoreCb.cis[i].handle = HCI_HANDLE_NONE;
+  }
   hciCoreCb.maxRxAclLen = HCI_MAX_RX_ACL_LEN;
   hciCoreCb.aclQueueHi = HCI_ACL_QUEUE_HI;
   hciCoreCb.aclQueueLo = HCI_ACL_QUEUE_LO;
@@ -760,8 +863,6 @@ void HciCoreInit(void)
 
 /*************************************************************************************************/
 /*!
- *  \fn     HciResetSequence
- *
  *  \brief  Initiate an HCI reset sequence.
  *
  *  \return None.
@@ -820,8 +921,6 @@ void HciResetSequence(void)
 
 /*************************************************************************************************/
 /*!
- *  \fn     HciSetMaxRxAclLen
- *
  *  \brief  Set the maximum reassembled RX ACL packet length.  Minimum value is 27.
  *
  *  \param  len     ACL packet length.
@@ -836,8 +935,6 @@ void HciSetMaxRxAclLen(uint16_t len)
 
 /*************************************************************************************************/
 /*!
- *  \fn     HciSetAclQueueWatermarks
- *
  *  \brief  Set TX ACL queue high and low watermarks.
  *
  *  \param  queueHi   Disable flow on a connection when this many ACL buffers are queued.
@@ -854,8 +951,6 @@ void HciSetAclQueueWatermarks(uint8_t queueHi, uint8_t queueLo)
 
 /*************************************************************************************************/
 /*!
-*  \fn      HciSetLeSupFeat
-*
 *  \brief   Set LE supported features configuration mask.
 *
 *  \param   feat    Feature bit to set or clear
@@ -864,7 +959,7 @@ void HciSetAclQueueWatermarks(uint8_t queueHi, uint8_t queueLo)
 *  \return None.
 */
 /*************************************************************************************************/
-void HciSetLeSupFeat(uint32_t feat, bool_t flag)
+void HciSetLeSupFeat(uint64_t feat, bool_t flag)
 {
   /* if asked to include feature */
   if (flag)
@@ -881,8 +976,31 @@ void HciSetLeSupFeat(uint32_t feat, bool_t flag)
 
 /*************************************************************************************************/
 /*!
- *  \fn     HciSendAclData
+ *  \brief   Set LE supported features configuration mask.
  *
+ *  \param   feat    Feature bit to set or clear
+ *  \param   flag    TRUE to set feature bit and FALSE to clear it
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+void HciSetLeSupFeat32(uint32_t feat, bool_t flag)
+{
+  /* if asked to include feature */
+  if (flag)
+  {
+    /* set feature bit */
+    hciLeSupFeatCfg |= feat;
+  }
+  else
+  {
+    /* clear feature bit */
+    hciLeSupFeatCfg &= ~feat;
+  }
+}
+
+/*************************************************************************************************/
+/*!
  *  \brief  Send data from the stack to HCI.
  *
  *  \param  pData    WSF buffer containing an ACL packet

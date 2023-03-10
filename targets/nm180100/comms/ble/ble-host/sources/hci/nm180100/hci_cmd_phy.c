@@ -4,7 +4,7 @@
  *
  *  \brief  HCI PHY command module.
  *
- *  Copyright (c) 2016-2018 Arm Ltd.
+ *  Copyright (c) 2016-2018 Arm Ltd. All Rights Reserved.
  *
  *  Copyright (c) 2019 Packetcraft, Inc.
  *
