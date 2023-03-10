@@ -309,7 +309,7 @@ target_sources(
 	${BLE_TARGET_DIR}/wsf/sources/port/nm180100/wsf_efs.c
 	${BLE_TARGET_DIR}/wsf/sources/port/nm180100/wsf_heap.c
 	${BLE_TARGET_DIR}/wsf/sources/port/nm180100/wsf_msg.c
-#	${BLE_TARGET_DIR}/wsf/sources/port/nm180100/wsf_nvm.c
+	${BLE_TARGET_DIR}/wsf/sources/port/nm180100/wsf_nvm.c
 	${BLE_TARGET_DIR}/wsf/sources/port/nm180100/wsf_os.c
 	${BLE_TARGET_DIR}/wsf/sources/port/nm180100/wsf_queue.c
 	${BLE_TARGET_DIR}/wsf/sources/port/nm180100/wsf_timer.c

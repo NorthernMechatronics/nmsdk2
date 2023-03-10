@@ -4,16 +4,16 @@
  *
  *  \brief  Trace message implementation.
  *
- *  Copyright (c) 2009-2018 Arm Ltd.
+ *  Copyright (c) 2009-2018 Arm Ltd. All Rights Reserved.
  *
- *  Copyright (c) 2019 Packetcraft, Inc.
- *
+ *  Copyright (c) 2019-2020 Packetcraft, Inc.
+ *  
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *
+ *  
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ *  
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,12 +24,13 @@
 
 #include "wsf_types.h"
 #include "wsf_trace.h"
+
 #include "wsf_bufio.h"
-#include "wsf_assert.h"
 #include "wsf_buf.h"
-#include "wsf_cs.h"
 #include "util/print.h"
 #include <stdarg.h>
+#include "wsf_assert.h"
+#include "wsf_cs.h"
 
 /**************************************************************************************************
   Macros
@@ -45,7 +46,7 @@
 
 #ifndef WSF_TOKEN_RING_BUF_SIZE
 /*! \brief      Size of token ring buffer (multiple of 2^N). */
-#define WSF_TOKEN_RING_BUF_SIZE        32
+#define WSF_TOKEN_RING_BUF_SIZE        64
 #endif
 
 /*! \brief      Ring buffer flow control condition detected. */
@@ -90,8 +91,6 @@ struct
  *
  *  \param  tok      Message token.
  *  \param  param    Message parameter.
- *
- *  \return None.
  */
 /*************************************************************************************************/
 void WsfToken(uint32_t tok, uint32_t param)
@@ -182,8 +181,6 @@ uint8_t wsfTraceOverFlowMessage(char *pBuf, const char *pStr, ...)
  *
  *  \param  pStr    Format string
  *  Addition parameters variable arguments to the format string.
- *
- *  \return None.
  */
 /*************************************************************************************************/
 void WsfTrace(const char *pStr, ...)
@@ -241,8 +238,6 @@ void WsfTrace(const char *pStr, ...)
  *  \brief  Enable trace messages.
  *
  *  \param  enable    TRUE to enable, FALSE to disable
- *
- *  \return None.
  */
 /*************************************************************************************************/
 void WsfTraceEnable(bool_t enable)
@@ -264,8 +259,6 @@ void WsfTraceEnable(bool_t enable)
  *  \brief  Register trace handler.
  *
  *  \param  traceCback    Token event handler.
- *
- *  \return None.
  *
  *  This routine registers trace output handler. This callback is called when the trace data is
  *  ready for writing.

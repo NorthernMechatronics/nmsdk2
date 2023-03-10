@@ -4,16 +4,16 @@
  *
  *  \brief  WSF buffer IO for UART driver.
  *
- *  Copyright (c) 2013-2018 Arm Ltd.
+ *  Copyright (c) 2013-2018 Arm Ltd. All Rights Reserved.
  *
- *  Copyright (c) 2019 Packetcraft, Inc.
- *
+ *  Copyright (c) 2019-2020 Packetcraft, Inc.
+ *  
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *
+ *  
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ *  
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,9 +25,10 @@
 #include <string.h>
 
 #include "wsf_types.h"
-#include "wsf_trace.h"
 #include "wsf_bufio.h"
+
 #include "wsf_cs.h"
+#include "wsf_trace.h"
 #include "wsf_os.h"
 
 #include "pal_uart.h"
@@ -74,8 +75,6 @@ static struct
  *  \brief  Start transmit.
  *
  *  \param  len Length to transmit.
- *
- *  \return None.
  */
 /*************************************************************************************************/
 static void wsfBufIoUartTxStart(uint16_t len)
@@ -125,8 +124,6 @@ static uint16_t wsfBufIoUartTxBufCount(void)
 /*************************************************************************************************/
 /*!
  *  \brief  Rx handler.
- *
- *  \return None.
  */
 /*************************************************************************************************/
 static void wsfBufIoUartRxHandler(void)
@@ -142,8 +139,6 @@ static void wsfBufIoUartRxHandler(void)
 /*************************************************************************************************/
 /*!
  *  \brief  Tx handler.
- *
- *  \return None.
  */
 /*************************************************************************************************/
 static void wsfBufIoUartTxHandler(void)
@@ -218,9 +213,7 @@ uint32_t WsfBufIoUartInit(void *pBuf, uint32_t size)
 /*!
  *  \brief  Register the UART RX callback.
  *
- *  \param  Callback function for UART RX.
- *
- *  \return None.
+ *  \param  rxCback  Callback function for UART RX.
  */
 /*************************************************************************************************/
 void WsfBufIoUartRegister(WsfBufIoUartRxCback_t rxCback)

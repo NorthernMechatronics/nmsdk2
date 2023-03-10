@@ -4,16 +4,16 @@
  *
  *  \brief  Buffer pool service.
  *
- *  Copyright (c) 2009-2018 Arm Ltd.
+ *  Copyright (c) 2009-2018 Arm Ltd. All Rights Reserved.
  *
- *  Copyright (c) 2019 Packetcraft, Inc.
- *
+ *  Copyright (c) 2019-2020 Packetcraft, Inc.
+ *  
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *
+ *  
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ *  
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,12 +24,13 @@
 
 #include "wsf_types.h"
 #include "wsf_buf.h"
-#include "wsf_heap.h"
+
 #include "wsf_assert.h"
+#include "wsf_cs.h"
+#include "wsf_trace.h"
+#include "wsf_heap.h"
 #include "wsf_math.h"
 #include "wsf_os.h"
-#include "wsf_trace.h"
-#include "wsf_cs.h"
 
 /**************************************************************************************************
   Macros
@@ -46,7 +47,7 @@
 typedef struct wsfBufMem_tag
 {
   struct wsfBufMem_tag  *pNext;
-#if WSF_BUF_FREE_CHECK == TRUE
+#if WSF_BUF_FREE_CHECK_ASSERT == TRUE
   uint32_t              free;
 #endif
 } wsfBufMem_t;
@@ -162,14 +163,14 @@ uint32_t WsfBufCalcSize(uint8_t numPools, wsfBufPoolDesc_t *pDesc)
 /*************************************************************************************************/
 uint32_t WsfBufInit(uint8_t numPools, wsfBufPoolDesc_t *pDesc)
 {
-  // declare pPool as volatile since pStart and pFree can potentially be optimised out 
-  volatile wsfBufPool_t  *pPool;
+  wsfBufPool_t  *pPool;
   wsfBufMem_t   *pStart;
   uint16_t      len;
   uint8_t       i;
 
   wsfBufMem = (wsfBufMem_t *) WsfHeapGetFreeStartAddress();
   pPool = (wsfBufPool_t *) wsfBufMem;
+
   /* Buffer storage starts after the pool structs. */
   pStart = (wsfBufMem_t *) (pPool + numPools);
 
@@ -265,7 +266,7 @@ uint32_t WsfBufInit(uint8_t numPools, wsfBufPoolDesc_t *pDesc)
 /*************************************************************************************************/
 void *WsfBufAlloc(uint16_t len)
 {
-  volatile wsfBufPool_t  *pPool;
+  wsfBufPool_t  *pPool;
   wsfBufMem_t   *pBuf;
   uint8_t       i;
 
@@ -292,7 +293,7 @@ void *WsfBufAlloc(uint16_t len)
         /* Next free buffer is stored inside current free buffer. */
         pPool->pFree = pBuf->pNext;
 
-#if WSF_BUF_FREE_CHECK == TRUE
+#if WSF_BUF_FREE_CHECK_ASSERT == TRUE
         pBuf->free = 0;
 #endif
 #if WSF_BUF_STATS_HIST == TRUE
@@ -368,19 +369,17 @@ void *WsfBufAlloc(uint16_t len)
  *  \brief  Free a buffer.
  *
  *  \param  pBuf    Buffer to free.
- *
- *  \return None.
  */
 /*************************************************************************************************/
 void WsfBufFree(void *pBuf)
 {
-  volatile wsfBufPool_t  *pPool;
+  wsfBufPool_t  *pPool;
   wsfBufMem_t   *p = pBuf;
 
   WSF_CS_INIT(cs);
 
   /* Verify pointer is within range. */
-#if WSF_BUF_FREE_CHECK == TRUE
+#if WSF_BUF_FREE_CHECK_ASSERT == TRUE
   WSF_ASSERT(p >= ((wsfBufPool_t *) wsfBufMem)->pStart);
   WSF_ASSERT(p < (wsfBufMem_t *)(((uint8_t *) wsfBufMem) + wsfBufMemLen));
 #endif
@@ -395,7 +394,7 @@ void WsfBufFree(void *pBuf)
       /* Enter critical section. */
       WSF_CS_ENTER(cs);
 
-#if WSF_BUF_FREE_CHECK == TRUE
+#if WSF_BUF_FREE_CHECK_ASSERT == TRUE
       WSF_ASSERT(p->free != WSF_BUF_FREE_NUM);
       p->free = WSF_BUF_FREE_NUM;
 #endif
@@ -475,8 +474,6 @@ uint8_t WsfBufGetNumPool(void)
  *
  *  \param  pBuf    Buffer to store the statistics.
  *  \param  poolId  Pool ID.
- *
- *  \return None.
  */
 /*************************************************************************************************/
 void WsfBufGetPoolStats(WsfBufPoolStat_t *pStat, uint8_t poolId)
@@ -515,8 +512,6 @@ void WsfBufGetPoolStats(WsfBufPoolStat_t *pStat, uint8_t poolId)
  *  \brief  Called to register the buffer diagnostics callback function.
  *
  *  \param  pCallback   Pointer to the callback function.
- *
- *  \return None.
  */
 /*************************************************************************************************/
 void WsfBufDiagRegister(WsfBufDiagCback_t callback)
