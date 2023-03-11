@@ -108,7 +108,7 @@ const uint8_t hciLeEventMask[HCI_LE_EVT_MASK_LEN] =
   HCI_EVT_MASK_LE_SCAN_REQ_RCVD_EVT |             /* Byte 2 */
   HCI_EVT_MASK_LE_CH_SEL_ALGO_EVT |               /* Byte 2 */
   HCI_EVT_MASK_LE_CONN_IQ_REPORT_EVT |            /* Byte 2 */
-  HCI_EVT_MASK_LE_CONNLESS_IQ_REPORT_EVT |        /* Byte 2 */
+//  HCI_EVT_MASK_LE_CONNLESS_IQ_REPORT_EVT |        /* Byte 2 */
   HCI_EVT_MASK_LE_CTE_REQ_FAILED_EVT |            /* Byte 2 */
   HCI_EVT_MASK_LE_PER_SYNC_TRSF_RCVT_EVT,         /* Byte 2 */
   HCI_EVT_MASK_LE_CIS_EST_EVT |                   /* Byte 3 */
@@ -717,7 +717,7 @@ uint8_t *hciCoreAclReassembly(uint8_t *pData)
         /* check length vs. configured maximum */
         if ((l2cLen + L2C_HDR_LEN) > hciCoreCb.maxRxAclLen)
         {
-          HCI_TRACE_WARN1("l2c len=0x%04x to large for reassembly", l2cLen);
+          HCI_TRACE_WARN2("l2c len=0x%04x to large for reassembly - max: 0x%04x", l2cLen, hciCoreCb.maxRxAclLen - L2C_HDR_LEN);
         }
         /* if reassembly required */
         else if ((l2cLen + L2C_HDR_LEN) > aclLen)
@@ -840,6 +840,10 @@ void HciCoreInit(void)
     hciCoreCb.conn[i].handle = HCI_HANDLE_NONE;
   }
 
+  for (i = 0; i < DM_CIS_MAX; i++)
+  {
+    hciCoreCb.cis[i].handle = HCI_HANDLE_NONE;
+  }
   hciCoreCb.maxRxAclLen = HCI_MAX_RX_ACL_LEN;
   hciCoreCb.aclQueueHi = HCI_ACL_QUEUE_HI;
   hciCoreCb.aclQueueLo = HCI_ACL_QUEUE_LO;
