@@ -4,9 +4,9 @@
  *
  *  \brief  Timer service.
  *
- *  Copyright (c) 2009-2019 Arm Ltd.
+ *  Copyright (c) 2009-2019 Arm Ltd. All Rights Reserved.
  *
- *  Copyright (c) 2019 Packetcraft, Inc.
+ *  Copyright (c) 2019-2020 Packetcraft, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@
 #include "wsf_types.h"
 #include "wsf_queue.h"
 #include "wsf_timer.h"
+
 #include "wsf_assert.h"
 #include "wsf_cs.h"
 #include "wsf_trace.h"
@@ -36,12 +37,59 @@
 #define CLOCK_SOURCE      WSF_OS_CLOCK_SOURCE
 
 /* convert seconds to timer ticks */
-#define WSF_TIMER_SEC_TO_TICKS(sec)         ((1000 / WSF_MS_PER_TICK) * (sec))
+//#define WSF_TIMER_SEC_TO_TICKS(sec)         ((1000 / WSF_MS_PER_TICK) * (sec))
 
 /* convert milliseconds to timer ticks */
-#define WSF_TIMER_MS_TO_TICKS(ms)           ((ms) / WSF_MS_PER_TICK)
+//#define WSF_TIMER_MS_TO_TICKS(ms)           ((ms) / WSF_MS_PER_TICK)
 
-#define CLK_TICKS_PER_WSF_TICKS             (WSF_MS_PER_TICK*CLOCK_PERIOD / 1000)
+
+/**************************************************************************************************
+  Macros
+**************************************************************************************************/
+
+#if (WSF_MS_PER_TICK == 10)
+/* convert seconds to timer ticks */
+#define WSF_TIMER_SEC_TO_TICKS(sec)         (100 * (sec) + 1)
+
+/* convert milliseconds to timer ticks */
+/* Extra tick should be added to guarantee waiting time is longer than the specified ms. */
+#define WSF_TIMER_MS_TO_TICKS(ms)           (((uint32_t)(((uint64_t)(ms) * (uint64_t)(419431)) >> 22)) + 1)
+
+/*! \brief  WSF timer ticks per second. */
+#define WSF_TIMER_TICKS_PER_SEC       (1000 / WSF_MS_PER_TICK)
+
+#elif (WSF_MS_PER_TICK == 1)
+/* convert seconds to timer ticks */
+#define WSF_TIMER_SEC_TO_TICKS(sec)         (1000 * (sec) + 1)
+
+/*! \brief Convert milliseconds to timer ticks. */
+/*! \brief Extra tick should be added to guarantee waiting time is longer than the specified ms. */
+#define WSF_TIMER_MS_TO_TICKS(ms)           ((uint64_t)(ms) + 1)
+
+#define WSF_TIMER_TICKS_PER_SEC             (1000)
+
+#else
+#error "WSF_TIMER_MS_TO_TICKS() and WSF_TIMER_SEC_TO_TICKS not defined for WSF_MS_PER_TICK"
+#endif
+
+/*! \brief  Number of RTC ticks per WSF timer tick. */
+#define WSF_TIMER_RTC_TICKS_PER_WSF_TICK  ((WSF_OS_CLOCK_PERIOD + WSF_TIMER_TICKS_PER_SEC - 1) / (WSF_TIMER_TICKS_PER_SEC))
+
+/*! \brief  Calculate number of elapsed WSF timer ticks. */
+#define WSF_RTC_TICKS_TO_WSF(x) ((x) / WSF_TIMER_RTC_TICKS_PER_WSF_TICK)
+
+/*! \brief  Mask of seconds part in RTC ticks. */
+#define WSF_TIMER_RTC_TICKS_SEC_MASK      (0x00FF8000)
+
+/*! \brief  Addition of RTC ticks. */
+#define WSF_TIMER_RTC_ADD_TICKS(x, y)     (((x) + (y)) & PAL_MAX_RTC_COUNTER_VAL)
+
+/*! \brief  Subtraction of RTC ticks. */
+#define WSF_TIMER_RTC_SUB_TICKS(x, y)     ((PAL_MAX_RTC_COUNTER_VAL + 1 + (x) - (y)) & PAL_MAX_RTC_COUNTER_VAL)
+
+/*! \brief  Minimum RTC ticks required to go into sleep. */
+#define WSF_TIMER_MIN_RTC_TICKS_FOR_SLEEP (2)
+
 
 /**************************************************************************************************
   Global Variables
@@ -74,8 +122,6 @@ void am_stimer_cmpr5_isr(void)
  *  \brief  Remove a timer from queue.  Note this function does not lock task scheduling.
  *
  *  \param  pTimer  Pointer to timer.
- *
- *  \return None.
  */
 /*************************************************************************************************/
 static void wsfTimerRemove(wsfTimer_t *pTimer)
@@ -111,8 +157,6 @@ static void wsfTimerRemove(wsfTimer_t *pTimer)
  *
  *  \param  pTimer  Pointer to timer.
  *  \param  ticks   Timer ticks until expiration.
- *
- *  \return None.
  */
 /*************************************************************************************************/
 static void wsfTimerInsert(wsfTimer_t *pTimer, wsfTimerTicks_t ticks)
@@ -154,10 +198,41 @@ static void wsfTimerInsert(wsfTimer_t *pTimer, wsfTimerTicks_t ticks)
 
 /*************************************************************************************************/
 /*!
+ *  \brief  Return the number of ticks until the next timer expiration.  Note that this
+ *          function can return zero even if a timer is running, indicating a timer
+ *          has expired but has not yet been serviced.
+ *
+ *  \param  pTimerRunning   Returns TRUE if a timer is running, FALSE if no timers running.
+ *
+ *  \return The number of ticks until the next timer expiration.
+ */
+/*************************************************************************************************/
+static wsfTimerTicks_t wsfTimerNextExpiration()
+{
+  wsfTimerTicks_t ticks;
+
+  /* task schedule lock */
+  WsfTaskLock();
+
+  if (wsfTimerTimerQueue.pHead == NULL)
+  {
+    ticks = 0;
+  }
+  else
+  {
+    ticks = ((wsfTimer_t *) wsfTimerTimerQueue.pHead)->ticks;
+  }
+
+  /* task schedule unlock */
+  WsfTaskUnlock();
+
+  return ticks;
+}
+
+/*************************************************************************************************/
+/*!
  *  \brief  Initialize the timer service.  This function should only be called once
  *          upon system initialization.
- *
- *  \return None.
  */
 /*************************************************************************************************/
 void WsfTimerInit(void)
@@ -188,8 +263,6 @@ void WsfTimerInit(void)
  *
  *  \param  pTimer  Pointer to timer.
  *  \param  sec     Seconds until expiration.
- *
- *  \return None.
  */
 /*************************************************************************************************/
 void WsfTimerStartSec(wsfTimer_t *pTimer, wsfTimerTicks_t sec)
@@ -206,8 +279,6 @@ void WsfTimerStartSec(wsfTimer_t *pTimer, wsfTimerTicks_t sec)
  *
  *  \param  pTimer  Pointer to timer.
  *  \param  ms     Milliseconds until expiration.
- *
- *  \return None.
  */
 /*************************************************************************************************/
 void WsfTimerStartMs(wsfTimer_t *pTimer, wsfTimerTicks_t ms)
@@ -223,8 +294,6 @@ void WsfTimerStartMs(wsfTimer_t *pTimer, wsfTimerTicks_t ms)
  *  \brief  Stop a timer.
  *
  *  \param  pTimer  Pointer to timer.
- *
- *  \return None.
  */
 /*************************************************************************************************/
 void WsfTimerStop(wsfTimer_t *pTimer)
@@ -245,8 +314,6 @@ void WsfTimerStop(wsfTimer_t *pTimer)
  *  \brief  Update the timer service with the number of elapsed ticks.
  *
  *  \param  ticks  Number of ticks since last update.
- *
- *  \return None.
  */
 /*************************************************************************************************/
 void WsfTimerUpdate(wsfTimerTicks_t ticks)
@@ -279,41 +346,6 @@ void WsfTimerUpdate(wsfTimerTicks_t ticks)
 
   /* task schedule unlock */
   WsfTaskUnlock();
-}
-
-/*************************************************************************************************/
-/*!
- *  \brief  Return the number of ticks until the next timer expiration.  Note that this
- *          function can return zero even if a timer is running, indicating a timer
- *          has expired but has not yet been serviced.
- *
- *  \param  pTimerRunning   Returns TRUE if a timer is running, FALSE if no timers running.
- *
- *  \return The number of ticks until the next timer expiration.
- */
-/*************************************************************************************************/
-wsfTimerTicks_t WsfTimerNextExpiration(bool_t *pTimerRunning)
-{
-  wsfTimerTicks_t ticks;
-
-  /* task schedule lock */
-  WsfTaskLock();
-
-  if (wsfTimerTimerQueue.pHead == NULL)
-  {
-    *pTimerRunning = FALSE;
-    ticks = 0;
-  }
-  else
-  {
-    *pTimerRunning = TRUE;
-    ticks = ((wsfTimer_t *) wsfTimerTimerQueue.pHead)->ticks;
-  }
-
-  /* task schedule unlock */
-  WsfTaskUnlock();
-
-  return ticks;
 }
 
 /*************************************************************************************************/
@@ -371,15 +403,16 @@ wsfTimer_t *WsfTimerServiceExpired(wsfTaskId_t taskId)
 void WsfTimerSleep(void)
 {
   wsfTimerTicks_t nextExpiration;
-  bool_t bTimerRunning;
 
-  nextExpiration = WsfTimerNextExpiration(&bTimerRunning);
+  nextExpiration = wsfTimerNextExpiration();
 
   if (nextExpiration > 0)
   {
-    uint32_t sleep_ticks = nextExpiration * CLK_TICKS_PER_WSF_TICKS;
-    am_hal_stimer_compare_delta_set(4, sleep_ticks);
-    am_hal_stimer_compare_delta_set(5, sleep_ticks+1);
+    uint32_t compareVal = nextExpiration * WSF_TIMER_RTC_TICKS_PER_WSF_TICK;
+
+    /* set RTC timer compare */
+    am_hal_stimer_compare_delta_set(4, compareVal);
+    am_hal_stimer_compare_delta_set(5, compareVal+1);
 
     /* enable RTC interrupt */
     am_hal_stimer_int_clear(AM_HAL_STIMER_INT_COMPAREE);
@@ -417,7 +450,7 @@ void WsfTimerSleepUpdate(void)
   {
     elapsed = current_ticks - wsfTimerRtcLastTicks;
 
-    wsfElapsed = elapsed / CLK_TICKS_PER_WSF_TICKS;
+    wsfElapsed = elapsed / WSF_TIMER_RTC_TICKS_PER_WSF_TICK;
 
     if (wsfElapsed)
     {
