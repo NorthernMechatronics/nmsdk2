@@ -4,7 +4,7 @@
  *
  *  \brief  HCI Constant Tone Extension (CTE) command module.
  *
- *  Copyright (c) 2018 Arm Ltd.
+ *  Copyright (c) 2018 Arm Ltd. All Rights Reserved.
  *
  *  Copyright (c) 2019 Packetcraft, Inc.
  *
