@@ -4,30 +4,34 @@
  *
  *  \brief  HCI transport module.
  *
- *          $Date: 2017-03-10 14:08:37 -0600 (Fri, 10 Mar 2017) $
- *          $Revision: 11501 $
+ *  Copyright (c) 2011-2018 Arm Ltd. All Rights Reserved.
  *
- *  Copyright (c) 2011-2017 ARM Ltd., all rights reserved.
- *  ARM Ltd. confidential and proprietary.
- *
- *  IMPORTANT.  Your use of this file is governed by a Software License Agreement
- *  ("Agreement") that must be accepted in order to download or otherwise receive a
- *  copy of this file.  You may not use or copy this file for any purpose other than
- *  as described in the Agreement.  If you do not agree to all of the terms of the
- *  Agreement do not use this file and delete all copies in your possession or control;
- *  if you do not have a copy of the Agreement, you must contact ARM Ltd. prior
- *  to any use, copying or further distribution of this software.
+ *  Copyright (c) 2019 Packetcraft, Inc.
+ *  
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *  
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *  
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 /*************************************************************************************************/
 
+#include <string.h>
 #include "wsf_types.h"
 #include "wsf_msg.h"
-#include "wsf_trace.h"
-#include "wsf_assert.h"
-#include "bstream.h"
+#include "util/bstream.h"
 #include "hci_api.h"
 #include "hci_core.h"
+#include "hci_tr.h"
+
 #include "hci_drv.h"
+#include "wsf_trace.h"
 
 /*************************************************************************************************/
 /*!
@@ -38,15 +42,15 @@
  *  \param  pContext Connection context.
  *  \param  pData    WSF msg buffer containing an ACL packet.
  *
- *  \return The length of ACL packet.
+ *  \return None.
  */
 /*************************************************************************************************/
-uint16_t hciTrSendAclData(void *pContext, uint8_t *pData)
+void hciTrSendAclData(void *pContext, uint8_t *pData)
 {
-  uint16_t   len;
+  uint16_t len;
 
   /* get 16-bit length */
-  BYTES_TO_UINT16(len, &pData[2]);
+  BYTES_TO_UINT16(len, (pData + 2));
   len += HCI_ACL_HDR_LEN;
 
   /* transmit ACL header and data */
@@ -54,38 +58,29 @@ uint16_t hciTrSendAclData(void *pContext, uint8_t *pData)
   {
       /* dump event for protocol analysis */
       HCI_PDUMP_TX_ACL(len, pData);
-      return len;
-  }
-  else
-  {
-      return 0;
   }
 }
 
 /*************************************************************************************************/
 /*!
- *  \fn     hciTrSendCmd
- *
  *  \brief  Send a complete HCI command to the transport.
  *
- *  \param  pData    WSF msg buffer containing an HCI command.
+ *  \param  pCmdData    WSF msg buffer containing an HCI command.
  *
- *  \return TRUE if packet sent, FALSE otherwise.
+ *  \return None.
  */
 /*************************************************************************************************/
-bool_t hciTrSendCmd(uint8_t *pData)
+void hciTrSendCmd(uint8_t *pCmdData)
 {
   uint16_t   len;  // in case like LE set periodic advertising data, the maximum HCI command parameter length is 255
 
   /* get length */
-  len = pData[2] + HCI_CMD_HDR_LEN;
+  len = pCmdData[2] + HCI_CMD_HDR_LEN;
 
   /* transmit ACL header and data */
-  if (hciDrvWrite(HCI_CMD_TYPE, len, pData) == len)
+  if (hciDrvWrite(HCI_CMD_TYPE, len, pCmdData) == len)
   {
       /* dump event for protocol analysis */
-      HCI_PDUMP_CMD(len, pData);
-      return TRUE;
+      HCI_PDUMP_CMD(len, pCmdData);
   }
-  return FALSE;
 }
