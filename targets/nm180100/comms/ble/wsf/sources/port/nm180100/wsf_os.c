@@ -227,7 +227,19 @@ wsfHandlerId_t WsfOsSetNextHandler(wsfEventHandler_t handler)
 /*************************************************************************************************/
 bool_t wsfOsReadyToSleep(void)
 {
-  return (wsfOs.task.taskEventMask == 0);
+  bool_t activeFlag = FALSE;
+
+  for (unsigned int i = 0; i < wsfOs.numFunc; i++)
+  {
+    if (wsfOs.sleepCheckFuncs[i])
+    {
+      activeFlag |= wsfOs.sleepCheckFuncs[i]();
+    }
+  }
+
+  activeFlag |= wsfOs.task.taskEventMask;
+
+  return (!activeFlag);
 }
 
 /*************************************************************************************************/
@@ -249,8 +261,6 @@ void WsfOsInit(void)
 /*************************************************************************************************/
 /*!
  *  \brief  Event dispatched.  Designed to be called repeatedly from infinite loop.
- *
- *  \return None.
  */
 /*************************************************************************************************/
 void wsfOsDispatcher(void)
@@ -267,58 +277,52 @@ void wsfOsDispatcher(void)
 
   pTask = &wsfOs.task;
 
-  while (pTask->taskEventMask)
+  /* get and then clear task event mask */
+  WSF_CS_ENTER(cs);
+  taskEventMask = pTask->taskEventMask;
+  pTask->taskEventMask = 0;
+  WSF_CS_EXIT(cs);
+
+  if (taskEventMask & WSF_MSG_QUEUE_EVENT)
   {
-    /* get and then clear task event mask */
-    WSF_CS_ENTER(cs);
-    taskEventMask = pTask->taskEventMask;
-    pTask->taskEventMask = 0;
-    WSF_CS_EXIT(cs);
-
-    if (taskEventMask & WSF_MSG_QUEUE_EVENT)
+    /* handle msg queue */
+    while ((pMsg = WsfMsgDeq(&pTask->msgQueue, &handlerId)) != NULL)
     {
-      /* handle msg queue */
-      while ((pMsg = WsfMsgDeq(&pTask->msgQueue, &handlerId)) != NULL)
-      {
-        WSF_ASSERT(handlerId < WSF_MAX_HANDLERS);
-        WSF_OS_SET_ACTIVE_HANDLER_ID(handlerId);
-        (*pTask->handler[handlerId])(0, pMsg);
-        WsfMsgFree(pMsg);
-      }
-    }
-
-    if (taskEventMask & WSF_TIMER_EVENT)
-    {
-      /* service timers */
-      while ((pTimer = WsfTimerServiceExpired(0)) != NULL)
-      {
-        WSF_ASSERT(pTimer->handlerId < WSF_MAX_HANDLERS);
-        WSF_OS_SET_ACTIVE_HANDLER_ID(pTimer->handlerId);
-        (*pTask->handler[pTimer->handlerId])(0, &pTimer->msg);
-      }
-    }
-
-    if (taskEventMask & WSF_HANDLER_EVENT)
-    {
-      /* service handlers */
-      for (i = 0; i < WSF_MAX_HANDLERS; i++)
-      {
-        if ((pTask->handlerEventMask[i] != 0) && (pTask->handler[i] != NULL))
-        {
-          WSF_CS_ENTER(cs);
-          eventMask = pTask->handlerEventMask[i];
-          pTask->handlerEventMask[i] = 0;
-          WSF_OS_SET_ACTIVE_HANDLER_ID(i);
-          WSF_CS_EXIT(cs);
-
-          (*pTask->handler[i])(eventMask, NULL);
-        }
-      }
+      WSF_ASSERT(handlerId < WSF_MAX_HANDLERS);
+      WSF_OS_SET_ACTIVE_HANDLER_ID(handlerId);
+      (*pTask->handler[handlerId])(0, pMsg);
+      WsfMsgFree(pMsg);
     }
   }
 
-  WsfTimerSleepUpdate();
-  WsfTimerSleep();
+  if (taskEventMask & WSF_TIMER_EVENT)
+  {
+    /* service timers */
+    while ((pTimer = WsfTimerServiceExpired(0)) != NULL)
+    {
+      WSF_ASSERT(pTimer->handlerId < WSF_MAX_HANDLERS);
+      WSF_OS_SET_ACTIVE_HANDLER_ID(pTimer->handlerId);
+      (*pTask->handler[pTimer->handlerId])(0, &pTimer->msg);
+    }
+  }
+
+  if (taskEventMask & WSF_HANDLER_EVENT)
+  {
+    /* service handlers */
+    for (i = 0; i < WSF_MAX_HANDLERS; i++)
+    {
+      if ((pTask->handlerEventMask[i] != 0) && (pTask->handler[i] != NULL))
+      {
+        WSF_CS_ENTER(cs);
+        eventMask = pTask->handlerEventMask[i];
+        pTask->handlerEventMask[i] = 0;
+        WSF_OS_SET_ACTIVE_HANDLER_ID(i);
+        WSF_CS_EXIT(cs);
+
+        (*pTask->handler[i])(eventMask, NULL);
+      }
+    }
+  }
 }
 
 #if defined (RTOS_CMSIS_RTX) && (RTOS_CMSIS_RTX == 1)
@@ -396,24 +400,19 @@ void WsfOsEnterMainLoop(void)
 {
   bool_t activeFlag = FALSE;
 
-  while (TRUE)
+  WsfTimerSleepUpdate();
+  wsfOsDispatcher();
+
+  for (unsigned int i = 0; i < wsfOs.numFunc; i++)
   {
-    WsfTimerSleepUpdate();
-    wsfOsDispatcher();
-
-    activeFlag = FALSE;
-
-    for (unsigned int i = 0; i < wsfOs.numFunc; i++)
+    if (wsfOs.sleepCheckFuncs[i])
     {
-      if (wsfOs.sleepCheckFuncs[i])
-      {
-        activeFlag |= wsfOs.sleepCheckFuncs[i]();
-      }
+      activeFlag |= wsfOs.sleepCheckFuncs[i]();
     }
+  }
 
-    if (!activeFlag)
-    {
-      WsfTimerSleep();
-    }
+  if (!activeFlag)
+  {
+    WsfTimerSleep();
   }
 }
