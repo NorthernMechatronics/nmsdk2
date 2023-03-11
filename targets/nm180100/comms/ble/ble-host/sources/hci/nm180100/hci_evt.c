@@ -241,7 +241,7 @@ static const hciEvtParse_t hciEvtParseFcnTbl[] = {
     hciEvtParseLeBigSyncLost,               // 83 HCI_LE_BIG_SYNC_LOST_CBACK_EVT
     hciEvtParseLeBigTermSyncCmpl,           // 84 HCI_LE_BIG_TERM_SYNC_CMPL_CBACK_EVT
     hciEvtParseLeBigInfoAdvRpt,             // 85 HCI_LE_BIG_INFO_ADV_REPORT_CBACK_EVT
-    hciEvtProcessLeConlessIQReport          // 86 HCI_LE_CONNLESS_IQ_REPORT_CBACK_EVT
+    NULL                                    // 86 HCI_LE_CONNLESS_IQ_REPORT_CBACK_EVT
 };
 
 /* HCI event structure length table, indexed by internal callback event value */
@@ -332,7 +332,7 @@ static const uint8_t hciEvtCbackLen[] = {
     sizeof(HciLeBigSyncLostEvt_t),               // 83 HCI_LE_BIG_SYNC_LOST_CBACK_EVT
     sizeof(HciLeBigTermSyncCmplEvt_t),           // 84 HCI_LE_BIG_TERM_SYNC_CMPL_CBACK_EVT
     sizeof(HciLeBigInfoAdvRptEvt_t),             // 85 HCI_LE_BIG_INFO_ADV_REPORT_CBACK_EVT
-    sizeof(hciLeConlessIQReportEvt_t)            // 86 HCI_LE_CONNLESS_IQ_REPORT_CBACK_EVT
+    sizeof(wsfMsgHdr_t)                          // 86 HCI_LE_CONNLESS_IQ_REPORT_CBACK_EVT
 };
 
 /* Global event statistics. */
