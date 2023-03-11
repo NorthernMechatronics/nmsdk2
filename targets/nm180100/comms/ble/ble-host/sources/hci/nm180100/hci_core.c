@@ -322,6 +322,119 @@ void hciCoreConnClose(uint16_t handle)
   hciCoreConnFree(handle);
 }
 
+/*************************************************************************************************/
+/*!
+ *  \brief  Allocate a CIS connection structure.
+ *
+ *  \param  handle  Connection handle.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+static void hciCoreCisAlloc(uint16_t handle)
+{
+  uint8_t         i;
+  hciCoreCis_t   *pCis = hciCoreCb.cis;
+
+  /* find available connection struct */
+  for (i = DM_CIS_MAX; i > 0; i--, pCis++)
+  {
+    if (pCis->handle == HCI_HANDLE_NONE)
+    {
+      /* allocate and initialize */
+      pCis->handle = handle;
+
+      return;
+    }
+  }
+
+  HCI_TRACE_WARN0("HCI cis struct alloc failure");
+}
+
+/*************************************************************************************************/
+/*!
+ *  \brief  Free a CIS connection structure.
+ *
+ *  \param  handle  Connection handle.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+static void hciCoreCisFree(uint16_t handle)
+{
+  uint8_t         i;
+  hciCoreCis_t   *pCis = hciCoreCb.cis;
+
+  /* find connection struct */
+  for (i = DM_CIS_MAX; i > 0; i--, pCis++)
+  {
+    if (pCis->handle == handle)
+    {
+      /* free structure */
+      pCis->handle = HCI_HANDLE_NONE;
+
+      return;
+    }
+  }
+
+  HCI_TRACE_WARN1("hciCoreCisFree handle not found:%u", handle);
+}
+
+/*************************************************************************************************/
+/*!
+ *  \brief  Get a CIS connection structure by handle
+ *
+ *  \param  handle  Connection handle.
+ *
+ *  \return Pointer to CIS connection structure or NULL if not found.
+ */
+/*************************************************************************************************/
+hciCoreCis_t *hciCoreCisByHandle(uint16_t handle)
+{
+  uint8_t         i;
+  hciCoreCis_t   *pCis = hciCoreCb.cis;
+
+  /* find available connection struct */
+  for (i = DM_CIS_MAX; i > 0; i--, pCis++)
+  {
+    if (pCis->handle == handle)
+    {
+      return pCis;
+    }
+  }
+
+  return NULL;
+}
+
+/*************************************************************************************************/
+/*!
+ *  \brief  Perform internal processing on HCI CIS connection open.
+ *
+ *  \param  handle  Connection handle.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+void hciCoreCisOpen(uint16_t handle)
+{
+  /* allocate CIS connection structure */
+  hciCoreCisAlloc(handle);
+}
+
+/*************************************************************************************************/
+/*!
+ *  \brief  Perform internal processing on HCI CIS connection close.
+ *
+ *  \param  handle  Connection handle.
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+void hciCoreCisClose(uint16_t handle)
+{
+  /* free CIS connection structure */
+  hciCoreCisFree(handle);
+}
 
 /*************************************************************************************************/
 /*!
@@ -843,6 +956,31 @@ void HciSetAclQueueWatermarks(uint8_t queueHi, uint8_t queueLo)
 */
 /*************************************************************************************************/
 void HciSetLeSupFeat(uint64_t feat, bool_t flag)
+{
+  /* if asked to include feature */
+  if (flag)
+  {
+    /* set feature bit */
+    hciLeSupFeatCfg |= feat;
+  }
+  else
+  {
+    /* clear feature bit */
+    hciLeSupFeatCfg &= ~feat;
+  }
+}
+
+/*************************************************************************************************/
+/*!
+ *  \brief   Set LE supported features configuration mask.
+ *
+ *  \param   feat    Feature bit to set or clear
+ *  \param   flag    TRUE to set feature bit and FALSE to clear it
+ *
+ *  \return None.
+ */
+/*************************************************************************************************/
+void HciSetLeSupFeat32(uint32_t feat, bool_t flag)
 {
   /* if asked to include feature */
   if (flag)
