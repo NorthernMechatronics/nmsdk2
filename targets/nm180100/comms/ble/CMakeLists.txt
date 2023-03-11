@@ -295,6 +295,7 @@ target_sources(
 	${BLE_TARGET_DIR}/ble-host/sources/hci/nm180100/hci_cmd_bis.c
 	${BLE_TARGET_DIR}/ble-host/sources/hci/nm180100/hci_cmd_cis.c
 	${BLE_TARGET_DIR}/ble-host/sources/hci/nm180100/hci_cmd_cte.c
+	${BLE_TARGET_DIR}/ble-host/sources/hci/nm180100/hci_cmd_iso.c
 	${BLE_TARGET_DIR}/ble-host/sources/hci/nm180100/hci_cmd_past.c
 	${BLE_TARGET_DIR}/ble-host/sources/hci/nm180100/hci_cmd_phy.c
 	${BLE_TARGET_DIR}/ble-host/sources/hci/nm180100/hci_core_ps.c
