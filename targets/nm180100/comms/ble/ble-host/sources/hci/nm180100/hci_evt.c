@@ -706,7 +706,8 @@ static void hciEvtParseVendorSpecCmdCmpl(hciEvt_t *pMsg, uint8_t *p, uint8_t len
 
     BSTREAM_TO_UINT16(pMsg->vendorSpecCmdCmpl.opcode, p);
     BSTREAM_TO_UINT8(pMsg->hdr.status, p);
-    memcpy(&pMsg->vendorSpecCmdCmpl.param[0], p, len - 4);
+    //memcpy(&pMsg->vendorSpecCmdCmpl.param[0], p, len - 4);
+    BSTREAM_TO_UINT8(pMsg->vendorSpecCmdCmpl.param[0], p);
 }
 
 /*************************************************************************************************/
@@ -1393,7 +1394,8 @@ static void hciEvtParseLeAdvSetTerm(hciEvt_t *pMsg, uint8_t *p, uint8_t len)
     BSTREAM_TO_UINT8(pMsg->leAdvSetTerm.numComplEvts, p);
 
     pMsg->hdr.status = pMsg->leAdvSetTerm.status;
-    pMsg->hdr.param = pMsg->leAdvSetTerm.handle;
+    //pMsg->hdr.param = pMsg->leAdvSetTerm.handle;
+    pMsg->hdr.param = pMsg->leAdvSetTerm.advHandle;
 }
 
 /*************************************************************************************************/
@@ -1412,6 +1414,8 @@ static void hciEvtParseLeScanReqRcvd(hciEvt_t *pMsg, uint8_t *p, uint8_t len)
     BSTREAM_TO_UINT8(pMsg->leScanReqRcvd.advHandle, p);
     BSTREAM_TO_UINT8(pMsg->leScanReqRcvd.scanAddrType, p);
     BSTREAM_TO_BDA(pMsg->leScanReqRcvd.scanAddr, p);
+
+    pMsg->hdr.param = pMsg->leScanReqRcvd.advHandle;
 }
 
 /*************************************************************************************************/
@@ -1437,6 +1441,7 @@ static void hciEvtParseLePerAdvSyncEst(hciEvt_t *pMsg, uint8_t *p, uint8_t len)
     BSTREAM_TO_UINT8(pMsg->lePerAdvSyncEst.clockAccuracy, p);
 
     pMsg->hdr.status = pMsg->lePerAdvSyncEst.status;
+    pMsg->hdr.param = pMsg->lePerAdvSyncEst.syncHandle;
 }
 
 /*************************************************************************************************/
@@ -1484,9 +1489,11 @@ static void hciEvtProcessLePerAdvReport(uint8_t *p, uint8_t len)
         memcpy(pMsg->pData, p, pMsg->len);
 
         /* initialize message header */
-        pMsg->hdr.param = 0;
+        //pMsg->hdr.param = 0;
+        pMsg->hdr.param = pMsg->syncHandle;
         pMsg->hdr.event = HCI_LE_PER_ADV_REPORT_CBACK_EVT;
-        pMsg->hdr.status = pMsg->status;
+        //pMsg->hdr.status = pMsg->status;
+        pMsg->hdr.status = HCI_SUCCESS;
 
         /* execute callback */
         (*hciCb.evtCback)((hciEvt_t *)pMsg);
@@ -1688,18 +1695,28 @@ static void hciEvtProcessLeDirectAdvReport(uint8_t *p, uint8_t len)
 static void hciEvtProcessLeConnIQReport(uint8_t *p, uint8_t len)
 {
     hciLeConnIQReportEvt_t *pMsg;
+    uint8_t sampleCnt;
 
     HCI_TRACE_INFO0("HCI Conn IQ report");
 
+    /* get report sample count */
+    sampleCnt = p[HCI_CONN_IQ_RPT_SAMPLE_CNT_OFFSET];
+
+    /* sanity check on number of sample count; quit if invalid */
+    if ((sampleCnt < HCI_IQ_RPT_SAMPLE_CNT_MIN) || (sampleCnt > HCI_IQ_RPT_SAMPLE_CNT_MAX))
+    {
+        HCI_TRACE_WARN1("Invalid conn IQ report sample count: %d", sampleCnt);
+        return;
+    }
+
     /* allocate temp buffer that can hold max length periodic adv report data */
-    if ((pMsg = WsfBufAlloc(sizeof(hciLeConnIQReportEvt_t) + HCI_IQ_RPT_SAMPLE_CNT_MAX * 2)) !=
-        NULL)
+    if ((pMsg = WsfBufAlloc(sizeof(hciLeConnIQReportEvt_t) + (2 * sampleCnt))) != NULL)
     {
         /* parse report and execute callback */
         BSTREAM_TO_UINT16(pMsg->handle, p);
         BSTREAM_TO_UINT8(pMsg->rxPhy, p);
         BSTREAM_TO_UINT8(pMsg->dataChIdx, p);
-        BSTREAM_TO_UINT16(pMsg->rssi, p);
+        BSTREAM_TO_INT16(pMsg->rssi, p);
         BSTREAM_TO_UINT8(pMsg->rssiAntennaId, p);
         BSTREAM_TO_UINT8(pMsg->cteType, p);
         BSTREAM_TO_UINT8(pMsg->slotDurations, p);
@@ -1709,19 +1726,18 @@ static void hciEvtProcessLeConnIQReport(uint8_t *p, uint8_t len)
 
         HCI_TRACE_INFO1("HCI Conn IQ report sample count: %d", pMsg->sampleCnt);
 
-        /* Copy I sample data to space after end of report struct */
+        /* Copy I samples to space after end of report struct */
         pMsg->pISample = (int8_t *)(pMsg + 1);
         memcpy(pMsg->pISample, p, pMsg->sampleCnt);
-        p += pMsg->sampleCnt;
 
         /* Copy Q samples to space after I samples space */
-        pMsg->pQSample = (int8_t *)(pMsg + 1) + HCI_IQ_RPT_SAMPLE_CNT_MAX;
-        memcpy(pMsg->pISample, p, pMsg->sampleCnt);
+        pMsg->pQSample = (int8_t *)((uint8_t *)pMsg->pISample + pMsg->sampleCnt);
+        memcpy(pMsg->pQSample, (p + pMsg->sampleCnt), pMsg->sampleCnt);
 
         /* initialize message header */
         pMsg->hdr.param = pMsg->handle;
         pMsg->hdr.event = HCI_LE_CONN_IQ_REPORT_CBACK_EVT;
-        pMsg->hdr.status = pMsg->pktStatus;
+        pMsg->hdr.status = HCI_SUCCESS;
 
         /* execute callback */
         (*hciCb.evtCback)((hciEvt_t *)pMsg);
