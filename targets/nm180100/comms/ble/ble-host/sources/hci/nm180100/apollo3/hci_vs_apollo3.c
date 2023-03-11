@@ -210,8 +210,17 @@ void hciCoreResetSequence(uint8_t *pMsg)
 
       case HCI_OPCODE_LE_READ_LOCAL_SUP_FEAT:
         /* parse and store event parameters */
-        BSTREAM_TO_UINT16(hciCoreCb.leSupFeat, pMsg);
+        BSTREAM_TO_UINT64(hciCoreCb.leSupFeat, pMsg);
 
+        /* if Isochronous Channels (Host support) is supported and included */
+        if (hciLeSupFeatCfg & HCI_LE_SUP_FEAT_ISO_HOST_SUPPORT)
+        {
+          HciLeSetHostFeatureCmd(HCI_LE_FEAT_BIT_ISO_HOST_SUPPORT, TRUE);
+          break;
+        }
+        /* Fallthrough */
+
+      case HCI_OPCODE_LE_SET_HOST_FEATURE:
         /* send next command in sequence */
         hciCoreReadResolvingListSize();
         break;
@@ -258,10 +267,34 @@ void hciCoreResetSequence(uint8_t *pMsg)
         }
         break;
 
+      case HCI_OPCODE_READ_LOCAL_VER_INFO:
+        /* parse and store event parameters */
+        BSTREAM_TO_UINT8(hciCoreCb.locVerInfo.hciVersion, pMsg);
+        BSTREAM_TO_UINT16(hciCoreCb.locVerInfo.hciRevision, pMsg);
+        BSTREAM_TO_UINT8(hciCoreCb.locVerInfo.lmpVersion, pMsg);
+        BSTREAM_TO_UINT16(hciCoreCb.locVerInfo.manufacturerName, pMsg);
+        BSTREAM_TO_UINT16(hciCoreCb.locVerInfo.lmpSubversion, pMsg);
+
+        if (hciCoreCb.extResetSeq)
+        {
+          /* send first extended command */
+          (*hciCoreCb.extResetSeq)(pMsg, opcode);
+        }
+        else
+        {
+          /* initialize extended parameters */
+          hciCoreCb.maxAdvDataLen = 0;
+          hciCoreCb.numSupAdvSets = 0;
+          hciCoreCb.perAdvListSize = 0;
+
+          /* send next command in sequence */
+          HciLeRandCmd();
+        }
+        break;
+
       case HCI_OPCODE_LE_READ_MAX_ADV_DATA_LEN:
       case HCI_OPCODE_LE_READ_NUM_SUP_ADV_SETS:
       case HCI_OPCODE_LE_READ_PER_ADV_LIST_SIZE:
-      case HCI_OPCODE_READ_LOCAL_VER_INFO:
         if (hciCoreCb.extResetSeq)
         {
           /* send next extended command in sequence */
