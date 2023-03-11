@@ -114,11 +114,8 @@ extern "C" {
 #define HCI_LE_READ_ANTENNA_INFO_CMD_CMPL_CBACK_EVT      67  /*!< \brief LE read antenna information command complete */
 #define HCI_LE_CIS_EST_CBACK_EVT                         68  /*!< \brief LE CIS established event */
 #define HCI_LE_CIS_REQ_CBACK_EVT                         69  /*!< \brief LE CIS request event */
-#define HCI_LE_REQ_PEER_SCA_CBACK_EVT                    70  /*!< \brief LE Request peer SCA complete */
-#define HCI_LE_CONNLESS_IQ_REPORT_CBACK_EVT              71  /*!< \brief LE connectioness IQ report event */
-
-//#define HCI_CIS_DISCONNECT_CMPL_CBACK_EVT                70  /*!< \brief CIS disconnect complete */
-
+#define HCI_CIS_DISCONNECT_CMPL_CBACK_EVT                70  /*!< \brief CIS disconnect complete */
+#define HCI_LE_REQ_PEER_SCA_CBACK_EVT                    71  /*!< \brief LE Request peer SCA complete */
 #define HCI_LE_SET_CIG_PARAMS_CMD_CMPL_CBACK_EVT         72  /*!< \brief LE set CIG parameters command complete */
 #define HCI_LE_REMOVE_CIG_CMD_CMPL_CBACK_EVT             73  /*!< \brief LE remove CIG command complete */
 #define HCI_LE_SETUP_ISO_DATA_PATH_CMD_CMPL_CBACK_EVT    74  /*!< \brief LE setup ISO data path command complete */
@@ -133,6 +130,7 @@ extern "C" {
 #define HCI_LE_BIG_SYNC_LOST_CBACK_EVT                   83  /*!< \brief LE BIG sync lost */
 #define HCI_LE_BIG_TERM_SYNC_CMPL_CBACK_EVT              84  /*!< \brief LE BIG terminate sync complete */
 #define HCI_LE_BIG_INFO_ADV_REPORT_CBACK_EVT             85  /*!< \brief LE BIG Info advertising report */
+#define HCI_LE_CONNLESS_IQ_REPORT_CBACK_EVT              86  /*!< \brief LE connectioness IQ report event */
 
 /**@}*/
 
