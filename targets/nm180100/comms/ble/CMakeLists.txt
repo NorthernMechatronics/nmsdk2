@@ -5,6 +5,7 @@ set(BLE_TARGET_DIR ${CMAKE_CURRENT_LIST_DIR})
 
 target_compile_definitions(
     ble PRIVATE
+	-DBT_VER=11
 	-DWDXS_INCLUDED=1
 	-DSEC_CMAC_CFG=1
 	-DSEC_ECC_CFG=2
@@ -209,12 +210,14 @@ target_sources(
 
 	${BLE_DIR}/ble-host/sources/stack/att/att_main.c
 	${BLE_DIR}/ble-host/sources/stack/att/att_uuid.c
+	${BLE_DIR}/ble-host/sources/stack/att/att_eatt.c
 	${BLE_DIR}/ble-host/sources/stack/att/attc_disc.c
 	${BLE_DIR}/ble-host/sources/stack/att/attc_main.c
 	${BLE_DIR}/ble-host/sources/stack/att/attc_proc.c
 	${BLE_DIR}/ble-host/sources/stack/att/attc_read.c
 	${BLE_DIR}/ble-host/sources/stack/att/attc_sign.c
 	${BLE_DIR}/ble-host/sources/stack/att/attc_write.c
+	${BLE_DIR}/ble-host/sources/stack/att/attc_eatt.c
 	${BLE_DIR}/ble-host/sources/stack/att/atts_ccc.c
 	${BLE_DIR}/ble-host/sources/stack/att/atts_csf.c
 	${BLE_DIR}/ble-host/sources/stack/att/atts_dyn.c
@@ -224,10 +227,17 @@ target_sources(
 	${BLE_DIR}/ble-host/sources/stack/att/atts_read.c
 	${BLE_DIR}/ble-host/sources/stack/att/atts_sign.c
 	${BLE_DIR}/ble-host/sources/stack/att/atts_write.c
+	${BLE_DIR}/ble-host/sources/stack/att/atts_eatt.c
 	${BLE_DIR}/ble-host/sources/stack/cfg/cfg_stack.c
 	${BLE_DIR}/ble-host/sources/stack/dm/dm_adv.c
 	${BLE_DIR}/ble-host/sources/stack/dm/dm_adv_ae.c
 	${BLE_DIR}/ble-host/sources/stack/dm/dm_adv_leg.c
+	${BLE_DIR}/ble-host/sources/stack/dm/dm_bis_master.c
+	${BLE_DIR}/ble-host/sources/stack/dm/dm_bis_slave.c
+	${BLE_DIR}/ble-host/sources/stack/dm/dm_cis.c
+	${BLE_DIR}/ble-host/sources/stack/dm/dm_cis_master.c
+	${BLE_DIR}/ble-host/sources/stack/dm/dm_cis_slave.c
+	${BLE_DIR}/ble-host/sources/stack/dm/dm_cis_sm.c
 	${BLE_DIR}/ble-host/sources/stack/dm/dm_conn.c
 	${BLE_DIR}/ble-host/sources/stack/dm/dm_conn_cte.c
 	${BLE_DIR}/ble-host/sources/stack/dm/dm_conn_master.c
@@ -239,6 +249,7 @@ target_sources(
 	${BLE_DIR}/ble-host/sources/stack/dm/dm_conn_sm.c
 	${BLE_DIR}/ble-host/sources/stack/dm/dm_dev.c
 	${BLE_DIR}/ble-host/sources/stack/dm/dm_dev_priv.c
+	${BLE_DIR}/ble-host/sources/stack/dm/dm_iso.c
 	${BLE_DIR}/ble-host/sources/stack/dm/dm_main.c
 	${BLE_DIR}/ble-host/sources/stack/dm/dm_past.c
 	${BLE_DIR}/ble-host/sources/stack/dm/dm_phy.c
