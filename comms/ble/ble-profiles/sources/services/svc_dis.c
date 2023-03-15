@@ -39,40 +39,40 @@
 #endif
 
 /*! Default manufacturer name */
-#define DIS_DEFAULT_MFR_NAME        "Arm Ltd."
+#define DIS_DEFAULT_MFR_NAME        "NMI"
 
 /*! Length of default manufacturer name */
-#define DIS_DEFAULT_MFR_NAME_LEN    8
+#define DIS_DEFAULT_MFR_NAME_LEN    3
 
 /*! Default model number */
-#define DIS_DEFAULT_MODEL_NUM       "Packetcraft model num"
+#define DIS_DEFAULT_MODEL_NUM       "NM180100"
 
 /*! Length of default model number */
-#define DIS_DEFAULT_MODEL_NUM_LEN   21
+#define DIS_DEFAULT_MODEL_NUM_LEN   8
 
 /*! Default serial number */
-#define DIS_DEFAULT_SERIAL_NUM      "Packetcraft serial num"
+#define DIS_DEFAULT_SERIAL_NUM      "NM180100"
 
 /*! Length of default serial number */
-#define DIS_DEFAULT_SERIAL_NUM_LEN  22
+#define DIS_DEFAULT_SERIAL_NUM_LEN  8
 
 /*! Default firmware revision */
-#define DIS_DEFAULT_FW_REV          "Packetcraft fw rev"
+#define DIS_DEFAULT_FW_REV          "NMSDK2"
 
 /*! Length of default firmware revision */
-#define DIS_DEFAULT_FW_REV_LEN      18
+#define DIS_DEFAULT_FW_REV_LEN      7
 
 /*! Default hardware revision */
-#define DIS_DEFAULT_HW_REV          "Packetcraft hw rev"
+#define DIS_DEFAULT_HW_REV          "A1"
 
 /*! Length of default hardware revision */
-#define DIS_DEFAULT_HW_REV_LEN      18
+#define DIS_DEFAULT_HW_REV_LEN      2 
 
 /*! Default software revision */
-#define DIS_DEFAULT_SW_REV          "Packetcraft sw rev"
+#define DIS_DEFAULT_SW_REV          "NMSDK2"
 
 /*! Length of default software revision */
-#define DIS_DEFAULT_SW_REV_LEN      18
+#define DIS_DEFAULT_SW_REV_LEN      7
 
 /*! Vendor ID source */
 #define DIS_VENDOR_ID_SRC_BT        0x01    /* Bluetooth SIG - assigned Device ID Vendor ID value from Assigned Numbers document */

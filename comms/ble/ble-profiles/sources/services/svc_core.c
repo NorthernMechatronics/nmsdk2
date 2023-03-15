@@ -48,10 +48,10 @@
 #endif
 
 /*! Default device name */
-#define CORE_DEFAULT_DEV_NAME       "Packetcraft"
+#define CORE_DEFAULT_DEV_NAME       "NMI"
 
 /*! Length of default device name */
-#define CORE_DEFAULT_DEV_NAME_LEN   6
+#define CORE_DEFAULT_DEV_NAME_LEN   3
 
 /**************************************************************************************************
  GAP group
