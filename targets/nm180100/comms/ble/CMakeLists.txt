@@ -17,11 +17,6 @@ target_compile_definitions(
 #	-DWSF_ASSERT_ENABLED=1
 )
 
-target_compile_options(
-	ble PRIVATE
-	-fomit-frame-pointer
-)
-
 set(
 	BLE_INCLUDES
 	${BLE_DIR}/ble-profiles/include

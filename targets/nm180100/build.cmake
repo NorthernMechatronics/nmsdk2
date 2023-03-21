@@ -14,14 +14,16 @@ set(CMAKE_AR           ${TARGET_TRIPLET}gcc-ar${TOOLCHAIN_EXT})
 set(CMAKE_RANLIB       ${TARGET_TRIPLET}gcc-ranlib${TOOLCHAIN_EXT})
 
 set(CMAKE_C_STANDARD   99)
+set(CMAKE_C_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(COMMON_C_FLAGS              "-mthumb -fdata-sections -ffunction-sections -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard")
 
-set(CMAKE_C_FLAGS               "${COMMON_C_FLAGS}")
-set(CMAKE_CXX_FLAGS             "${COMMON_C_FLAGS} -fno-exceptions -fno-rtti")
+set(CMAKE_C_FLAGS               "${COMMON_C_FLAGS} -MMD -MP -fomit-frame-pointer")
+set(CMAKE_CXX_FLAGS             "${COMMON_C_FLAGS} -MMD -MP -fomit-frame-pointer -fno-exceptions -fno-rtti")
 set(CMAKE_ASM_FLAGS             "${COMMON_C_FLAGS}")
-set(CMAKE_EXE_LINKER_FLAGS_INIT "${COMMON_C_FLAGS} --specs=nano.specs --specs=nosys.specs")
+set(CMAKE_EXE_LINKER_FLAGS_INIT "--specs=nano.specs --specs=nosys.specs")
 
 set(CMAKE_C_FLAGS_DEBUG         "-g -O0")
 set(CMAKE_C_FLAGS_RELEASE       "-Os")
