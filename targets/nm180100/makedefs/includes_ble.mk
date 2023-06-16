@@ -9,11 +9,12 @@ BLE_DEFINES += -DWSF_TRACE_ENABLED=1
 #BLE_DEFINES += -DWSF_ASSERT_ENABLED=1
 
 BLE_INC += -I$(BLE)/ble-profiles/include
-BLE_INC += -I$(BLE)/ble-profiles/include/app
-BLE_INC += -I$(BLE)/ble-profiles/sources/apps/app
+BLE_INC += -I$(BLE)/ble-profiles/sources/af
 
 BLE_INC += -I$(BLE)/ble-profiles/sources/profiles/include
 BLE_INC += -I$(BLE)/ble-profiles/sources/profiles
+BLE_INC += -I$(BLE)/platform/include
+
 
 BLE_INC += -I$(BLE)/ble-profiles/sources/services
 

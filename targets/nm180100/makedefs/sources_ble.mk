@@ -1,5 +1,5 @@
-VPATH += $(BLE)/ble-profiles/sources/apps/app
-VPATH += $(BLE)/ble-profiles/sources/apps/app/common
+VPATH += $(BLE)/ble-profiles/sources/af/
+VPATH += $(BLE)/ble-profiles/sources/af/common
 
 BLE_SRC += app_disc.c
 BLE_SRC += app_main.c
