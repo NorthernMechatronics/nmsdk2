@@ -1,4 +1,4 @@
-add_library(ble STATIC)
+add_library(ble STATIC)BLE_TARGET_DIR
 
 set(BLE_DIR ${PROJECT_SOURCE_DIR}/comms/ble)
 set(BLE_TARGET_DIR ${CMAKE_CURRENT_LIST_DIR})

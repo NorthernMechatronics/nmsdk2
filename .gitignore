@@ -17,3 +17,4 @@ __pycache__/
 *.map
 am_bsp_pins.c
 am_bsp_pins.h
+*.a

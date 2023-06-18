@@ -241,13 +241,13 @@ VPATH += ./comms/ble/wsf/sources/port/nm180100
 
 BLE_SRC += wsf_assert.c
 BLE_SRC += wsf_buf.c
-#BLE_SRC += wsf_bufio.c
+BLE_SRC += wsf_bufio.c
 BLE_SRC += wsf_cs.c
 BLE_SRC += wsf_detoken.c
 BLE_SRC += wsf_efs.c
 BLE_SRC += wsf_heap.c
 BLE_SRC += wsf_msg.c
-#BLE_SRC += wsf_nvm.c
+BLE_SRC += wsf_nvm.c
 BLE_SRC += wsf_os.c
 BLE_SRC += wsf_queue.c
 BLE_SRC += wsf_timer.c
