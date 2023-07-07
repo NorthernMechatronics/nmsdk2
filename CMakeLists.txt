@@ -14,6 +14,7 @@ set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/lib)
 set(CMAKE_DEBUG_POSTFIX -dbg)
 set(CMAKE_RELEASE_POSTFIX -rel)
 
+add_subdirectory(targets/${TARGET}/cmsis)
 add_subdirectory(targets/${TARGET}/hal)
 add_subdirectory(targets/${TARGET}/rtos/FreeRTOS)
 

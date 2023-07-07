@@ -3,8 +3,8 @@ add_library(hal STATIC)
 set(HAL_DIR ${PROJECT_SOURCE_DIR}/hal/ambiq)
 
 set (HAL_INCLUDES
+    ${PROJECT_SOURCE_DIR}/cmsis/CMSIS_5/CMSIS/Core/Include
     ${HAL_DIR}/CMSIS/AmbiqMicro/Include
-    ${HAL_DIR}/CMSIS/ARM/Include
     ${HAL_DIR}/mcu
     ${HAL_DIR}/mcu/apollo3
     ${HAL_DIR}/mcu/apollo3/hal
