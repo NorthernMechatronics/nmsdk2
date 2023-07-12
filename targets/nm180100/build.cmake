@@ -13,13 +13,13 @@ set(CMAKE_NM_UTIL      ${TARGET_TRIPLET}gcc-nm${TOOLCHAIN_EXT})
 set(CMAKE_AR           ${TARGET_TRIPLET}gcc-ar${TOOLCHAIN_EXT})
 set(CMAKE_RANLIB       ${TARGET_TRIPLET}gcc-ranlib${TOOLCHAIN_EXT})
 
-set(CMAKE_C_STANDARD   99)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_C_STANDARD   11)
+set(CMAKE_CXX_STANDARD 17)
 
 set(COMMON_C_FLAGS              "-mthumb -fdata-sections -ffunction-sections -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard")
 
-set(CMAKE_C_FLAGS               "${COMMON_C_FLAGS}")
-set(CMAKE_CXX_FLAGS             "${COMMON_C_FLAGS} -fno-exceptions -fno-rtti")
+set(CMAKE_C_FLAGS               "${COMMON_C_FLAGS} -std=c11")
+set(CMAKE_CXX_FLAGS             "${COMMON_C_FLAGS} -std=c++17 -fno-exceptions -fno-rtti")
 set(CMAKE_ASM_FLAGS             "${COMMON_C_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS_INIT "${COMMON_C_FLAGS} --specs=nosys.specs")
 
