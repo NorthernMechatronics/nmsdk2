@@ -14,6 +14,9 @@ set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/lib)
 set(CMAKE_DEBUG_POSTFIX -dbg)
 set(CMAKE_RELEASE_POSTFIX -rel)
 
+set(TARGET_SRC ${PROJECT_SOURCE_DIR}/targets/${TARGET}/startup_gcc.c CACHE PATH "startup file")
+set(TARGET_LINK_SCRIPT ${PROJECT_SOURCE_DIR}/targets/${TARGET}/AMA3B1KK.ld CACHE PATH "link script")
+
 add_subdirectory(targets/${TARGET}/cmsis)
 add_subdirectory(targets/${TARGET}/hal)
 add_subdirectory(targets/${TARGET}/rtos/FreeRTOS)
