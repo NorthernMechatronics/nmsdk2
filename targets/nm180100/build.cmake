@@ -21,7 +21,7 @@ set(COMMON_C_FLAGS              "-mthumb -fdata-sections -ffunction-sections -mc
 set(CMAKE_C_FLAGS               "${COMMON_C_FLAGS}")
 set(CMAKE_CXX_FLAGS             "${COMMON_C_FLAGS} -fno-exceptions -fno-rtti")
 set(CMAKE_ASM_FLAGS             "${COMMON_C_FLAGS}")
-set(CMAKE_EXE_LINKER_FLAGS_INIT "${COMMON_C_FLAGS} --specs=nano.specs --specs=nosys.specs")
+set(CMAKE_EXE_LINKER_FLAGS_INIT "${COMMON_C_FLAGS} --specs=nosys.specs")
 
 set(CMAKE_C_FLAGS_DEBUG         "-g -O0")
 set(CMAKE_C_FLAGS_RELEASE       "-Os")
