@@ -28,3 +28,5 @@ endif()
 if (RAT_BLE_ENABLE)
 add_subdirectory(targets/${TARGET}/comms/ble)
 endif()
+
+add_subdirectory(targets/${TARGET}/middleware/tflite-micro-2.6.5)
