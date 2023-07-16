@@ -4,6 +4,8 @@ set(TFLM_DIR ${PROJECT_SOURCE_DIR}/middleware/tflite-micro-2.6.5)
 
 set (TFLM_INCLUDES
     ${PROJECT_SOURCE_DIR}/cmsis/CMSIS_5/CMSIS/Core/Include
+    ${PROJECT_SOURCE_DIR}/cmsis/CMSIS-DSP/Include
+    ${PROJECT_SOURCE_DIR}/cmsis/CMSIS-NN/Include
     ${TFLM_DIR}
     ${TFLM_DIR}/third_party/flatbuffers/include
     ${TFLM_DIR}/third_party/gemmlowp
@@ -17,6 +19,7 @@ target_compile_definitions(
     -DTF_LITE_STATIC_MEMORY
     -DTF_LITE_MCU_DEBUG_LOG
     -DARM_MATH_CM4
+    -DCMSIS_NN
 )
 
 target_include_directories(
@@ -55,7 +58,6 @@ target_sources(
     ${TFLM_DIR}/tensorflow/lite/kernels/kernel_util.cc 
     ${TFLM_DIR}/tensorflow/lite/schema/schema_utils.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/activations.cc 
-    ${TFLM_DIR}/tensorflow/lite/micro/kernels/add.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/add_n.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/arg_min_max.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/batch_to_space_nd.cc 
@@ -64,11 +66,9 @@ target_sources(
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/circular_buffer.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/comparisons.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/concatenation.cc 
-    ${TFLM_DIR}/tensorflow/lite/micro/kernels/conv.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/conv_common.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/cumsum.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/depth_to_space.cc 
-    ${TFLM_DIR}/tensorflow/lite/micro/kernels/depthwise_conv.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/depthwise_conv_common.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/dequantize.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/detection_postprocess.cc 
@@ -81,7 +81,6 @@ target_sources(
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/floor.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/floor_div.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/floor_mod.cc 
-    ${TFLM_DIR}/tensorflow/lite/micro/kernels/fully_connected.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/fully_connected_common.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/gather.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/gather_nd.cc 
@@ -96,11 +95,9 @@ target_sources(
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/logistic.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/log_softmax.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/maximum_minimum.cc 
-    ${TFLM_DIR}/tensorflow/lite/micro/kernels/mul.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/neg.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/pack.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/pad.cc 
-    ${TFLM_DIR}/tensorflow/lite/micro/kernels/pooling.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/prelu.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/quantize.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/quantize_common.cc 
@@ -110,7 +107,6 @@ target_sources(
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/resize_nearest_neighbor.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/round.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/shape.cc 
-    ${TFLM_DIR}/tensorflow/lite/micro/kernels/softmax.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/softmax_common.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/space_to_batch_nd.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/split.cc 
@@ -118,13 +114,30 @@ target_sources(
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/squeeze.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/strided_slice.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/sub.cc 
-    ${TFLM_DIR}/tensorflow/lite/micro/kernels/svdf.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/svdf_common.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/tanh.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/transpose.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/transpose_conv.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/unpack.cc 
     ${TFLM_DIR}/tensorflow/lite/micro/kernels/zeros_like.cc 
+
+    # ${TFLM_DIR}/tensorflow/lite/micro/kernels/add.cc 
+    # ${TFLM_DIR}/tensorflow/lite/micro/kernels/conv.cc 
+    # ${TFLM_DIR}/tensorflow/lite/micro/kernels/depthwise_conv.cc 
+    # ${TFLM_DIR}/tensorflow/lite/micro/kernels/fully_connected.cc 
+    # ${TFLM_DIR}/tensorflow/lite/micro/kernels/mul.cc 
+    # ${TFLM_DIR}/tensorflow/lite/micro/kernels/pooling.cc 
+    # ${TFLM_DIR}/tensorflow/lite/micro/kernels/softmax.cc 
+    # ${TFLM_DIR}/tensorflow/lite/micro/kernels/svdf.cc 
+
+    ${TFLM_DIR}/tensorflow/lite/micro/kernels/cmsis_nn/add.cc
+    ${TFLM_DIR}/tensorflow/lite/micro/kernels/cmsis_nn/conv.cc 
+    ${TFLM_DIR}/tensorflow/lite/micro/kernels/cmsis_nn/depthwise_conv.cc 
+    ${TFLM_DIR}/tensorflow/lite/micro/kernels/cmsis_nn/fully_connected.cc 
+    ${TFLM_DIR}/tensorflow/lite/micro/kernels/cmsis_nn/mul.cc 
+    ${TFLM_DIR}/tensorflow/lite/micro/kernels/cmsis_nn/pooling.cc 
+    ${TFLM_DIR}/tensorflow/lite/micro/kernels/cmsis_nn/softmax.cc 
+    ${TFLM_DIR}/tensorflow/lite/micro/kernels/cmsis_nn/svdf.cc 
 )
 
 install (TARGETS tflm DESTINATION ${PROJECT_SOURCE_DIR}/lib/${TARGET})
