@@ -17,6 +17,7 @@ set(CMAKE_RELEASE_POSTFIX -rel)
 add_subdirectory(targets/${TARGET}/cmsis)
 add_subdirectory(targets/${TARGET}/hal)
 add_subdirectory(targets/${TARGET}/rtos/FreeRTOS)
+add_subdirectory(targets/${TARGET}/drivers)
 
 if (RAT_LORAWAN_ENABLE)
 add_subdirectory(targets/${TARGET}/comms/lorawan)
