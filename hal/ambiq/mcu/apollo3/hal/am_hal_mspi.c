@@ -1858,13 +1858,14 @@ uint32_t am_hal_mspi_control(void *pHandle,
 
         case AM_HAL_MSPI_REQ_SEQ_END:
         {
-            uint32_t ui32Status = AM_HAL_STATUS_SUCCESS;
             am_hal_cmdq_entry_t     *pCQBlock;
             uint32_t                index;
             am_hal_mspi_seq_end_t *pLoop = (am_hal_mspi_seq_end_t *)pConfig;
             uint32_t pause = 0;
             uint32_t scUnpause = 0;
             uint32_t            ui32Critical = 0;
+
+            ui32Status = AM_HAL_STATUS_SUCCESS;
 #ifndef AM_HAL_DISABLE_API_VALIDATION
             if (!pConfig)
             {

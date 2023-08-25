@@ -1225,7 +1225,7 @@ am_hal_ctimer_output_config(uint32_t ui32TimerNumber,
     uint32_t ui32CtxOutcfgFnc, ui32CtxOutcfgMsk, ui32CfgShf;
     uint32_t ui32OutcfgValue;
 
-    am_hal_gpio_pincfg_t sPinCfg = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    am_hal_gpio_pincfg_t sPinCfg = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
     if ( (ui32PadNum > AM_HAL_GPIO_MAX_PADS)  ||  (ui32TimerNumber > 7)   ||
          (eOutputType > AM_HAL_CTIMER_OUTPUT_FORCE1)    ||
