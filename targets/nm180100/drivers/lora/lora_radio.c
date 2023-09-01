@@ -235,6 +235,8 @@ void lora_radio_state_set(lora_radio_state_e eState)
     case LORA_RADIO_STATE_STANDBY:
         sx1262_set_mode(SX1262_OP_MODE_STANDBY, STDBY_RC);
         break;
+    default:
+        break;
     }
 }
 
@@ -565,6 +567,9 @@ lora_radio_state_e lora_radio_state_get()
 
     case SX1262_OP_MODE_CAD:
         return LORA_RADIO_STATE_CAD;
+
+    default:
+        break;
     }
 }
 
@@ -583,6 +588,8 @@ void lora_radio_get_entropy(uint8_t *buf, size_t buflen)
             LORA_RADIO_MAX_PHYSICAL_PACKET_LEN,
             915000000,
             0xFFFFFF);
+        break;
+    default:
         break;
     }
 
@@ -604,6 +611,8 @@ void lora_radio_get_entropy(uint8_t *buf, size_t buflen)
         break;
     case SX1262_OP_MODE_STANDBY:
         sx1262_set_mode(SX1262_OP_MODE_STANDBY, STDBY_RC);
+        break;
+    default:
         break;
     }
 }
