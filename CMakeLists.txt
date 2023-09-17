@@ -33,3 +33,6 @@ endif()
 if (TF_ENABLE)
 add_subdirectory(targets/${TARGET}/middleware/tflite-micro-2.6.5)
 endif()
+
+#set(CMSISCORE ${PROJECT_SOURCE_DIR}/cmsis/CMSIS_5/CMSIS/Core)
+#add_subdirectory(${PROJECT_SOURCE_DIR}/cmsis/CMSIS-DSP)
