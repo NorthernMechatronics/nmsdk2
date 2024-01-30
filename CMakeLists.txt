@@ -36,5 +36,5 @@ endif()
 
 if (CMSIS_DSP_ENABLE)
 set(CMSISCORE ${PROJECT_SOURCE_DIR}/cmsis/CMSIS_5/CMSIS/Core)
-add_subdirectory(${PROJECT_SOURCE_DIR}/cmsis/CMSIS-DSP)
+add_subdirectory(cmsis/CMSIS-DSP)
 endif()
