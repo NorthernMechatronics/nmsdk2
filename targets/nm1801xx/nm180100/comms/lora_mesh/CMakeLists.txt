@@ -1,0 +1,6 @@
+set(LORA_MESH_INCLUDES
+    ${PROJECT_SOURCE_DIR}/${FAMILY_COMMON_DIR}/comms/lora_mesh/include
+    CACHE PATH ""
+)
+
+set(LORA_MESH_LIBS ${CMAKE_CURRENT_SOURCE_DIR}/lib/liblrm.a CACHE PATH "LRM libs")
