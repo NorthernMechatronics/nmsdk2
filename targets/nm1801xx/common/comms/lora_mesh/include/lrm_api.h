@@ -116,6 +116,7 @@ typedef void (*lrm_role_changed_callback)(lrm_context_t *context, lrm_device_rol
 
 #define LRM_IP6_ADDRESS_STRING_SIZE 40  // Recommended size for string representation of an IPv6 address.
 
+#define LRM_IP6_ADDRESS_SIZE 16
 /**
  * Represents an opaque type for an IPv6 address.
  */
@@ -248,6 +249,24 @@ bool lrm_is_network_started(lrm_context_t *context);
  * @retval LRM_DEVICE_ROLE_LEADER   The device is currently operating as a LoRa mesh Leader.
  */
 lrm_device_role_e lrm_get_device_role(lrm_context_t *context);
+
+typedef enum {
+    LRM_IP6_ADDR_TYPE_LINK_LOCAL,
+    LRM_IP6_ADDR_TYPE_ROUTING_LOCATOR,
+    LRM_IP6_ADDR_TYPE_MESH_LOCAL,
+} lrm_ip6_addr_type_e;
+
+/**
+ * Retrieve a LoRa mesh device IP6 address.
+ *
+ * @param[in]  context          A pointer to a LoRa mesh context.
+ * @param[in]  addr_type        The address type to retrieve.
+ * @param[in]  addr             A pointer to an IPv6 address.
+ *
+ * @retval LRM_ERROR_NONE   Successfully retrieved the address.
+ * @retval LRM_ERROR_FAILED Failed to retrieve the address.
+ */
+lrm_error_e lrm_ip6_address_get(lrm_context_t *context, lrm_ip6_addr_type_e addr_type, const lrm_ip6_address *(*addr));
 
 /**
  * Open a LoRa mesh UDP socket.
