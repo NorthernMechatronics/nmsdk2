@@ -149,6 +149,10 @@ void lora_radio_config_get(lora_radio_parameter_e eParam, uint32_t *value)
     {
         *value = lora_radio_param_syncword;
     }
+    else if (eParam == LORA_RADIO_PARAM_LDR)
+    {
+        *value = lora_radio_param_ldr;
+    }
 }
 
 static void lora_radio_config_set_ldr()

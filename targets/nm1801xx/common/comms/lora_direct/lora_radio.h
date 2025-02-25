@@ -160,6 +160,7 @@ typedef enum lora_radio_parameter_e {
     LORA_RADIO_PARAM_CRC,
     LORA_RADIO_PARAM_IQ,
     LORA_RADIO_PARAM_SYNCWORD,
+    LORA_RADIO_PARAM_LDR,
 } lora_radio_parameter_e;
 
 typedef void (*lora_radio_callback_t)(void *);

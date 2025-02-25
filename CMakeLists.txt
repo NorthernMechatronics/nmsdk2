@@ -1,5 +1,5 @@
 cmake_policy(SET CMP0048 NEW)
-cmake_minimum_required(VERSION 3.12.0)
+cmake_minimum_required(VERSION 3.13.0)
 
 if (NOT NM_FAMILY)
     set(NM_FAMILY "nm1801xx" CACHE PATH "NM build family")

@@ -9,7 +9,7 @@ message(FATAL_ERROR "Target not supported")
 endif()
 
 set (HAL_INCLUDES
-    ${PROJECT_SOURCE_DIR}/cmsis/CMSIS_5/CMSIS/Core/Include
+    ${PROJECT_SOURCE_DIR}/cmsis/CMSIS_6/CMSIS/Core/Include
     ${HAL_DIR}/CMSIS/AmbiqMicro/Include
     ${HAL_DIR}/mcu
     ${HAL_APOLLO_DIR}
