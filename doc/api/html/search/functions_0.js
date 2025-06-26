@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['lrm_5ffactory_5freset_55',['lrm_factory_reset',['../dd/d5f/group__api-lrm.html#ga36506e24f9b95e6426031fd7ad8b3164',1,'lrm_api.h']]],
+  ['lrm_5ffinalize_56',['lrm_finalize',['../dd/d5f/group__api-lrm.html#ga43ada28602c7301fe476931f0407e53b',1,'lrm_api.h']]],
+  ['lrm_5fget_5fdevice_5frole_57',['lrm_get_device_role',['../dd/d5f/group__api-lrm.html#ga3ca4285b8ae26c05c029101a589cbdcc',1,'lrm_api.h']]],
+  ['lrm_5finit_58',['lrm_init',['../dd/d5f/group__api-lrm.html#ga90f67f9d840793bc6425199242300dfc',1,'lrm_api.h']]],
+  ['lrm_5fip6_5faddress_5fget_59',['lrm_ip6_address_get',['../db/d94/group__api-lrm-ipv6.html#gafd4fb39eb1f99a3d0a44ec395951f054',1,'lrm_api.h']]],
+  ['lrm_5fip6_5faddress_5fto_5fstring_60',['lrm_ip6_address_to_string',['../db/d94/group__api-lrm-ipv6.html#ga039c871e45c47eb912ad51abce06b99b',1,'lrm_api.h']]],
+  ['lrm_5fis_5fconfigured_61',['lrm_is_configured',['../dd/d5f/group__api-lrm.html#ga043a2f07326ab405e7c1061c76ebbbc4',1,'lrm_api.h']]],
+  ['lrm_5fis_5fnetwork_5fstarted_62',['lrm_is_network_started',['../dd/d5f/group__api-lrm.html#gaf2a771c2f4e41120d09bc799c26733c9',1,'lrm_api.h']]],
+  ['lrm_5fmessage_5fget_5flength_63',['lrm_message_get_length',['../dd/d5f/group__api-lrm.html#gace0e022662ea4d3a3071d609ef38a516',1,'lrm_api.h']]],
+  ['lrm_5fmessage_5fget_5foffset_64',['lrm_message_get_offset',['../dd/d5f/group__api-lrm.html#ga72216d56fb6d9bf945c6196de8ae7619',1,'lrm_api.h']]],
+  ['lrm_5fmessage_5fget_5frss_65',['lrm_message_get_rss',['../dd/d5f/group__api-lrm.html#gaf9b8c3a27bdda280b5fe87406c43e8fc',1,'lrm_api.h']]],
+  ['lrm_5fmessage_5finfo_5fget_5fpeer_5faddr_66',['lrm_message_info_get_peer_addr',['../dd/d5f/group__api-lrm.html#ga2823e0ef56d7ba3dad6cc3dc471085d9',1,'lrm_api.h']]],
+  ['lrm_5fmessage_5finfo_5fget_5fpeer_5fport_67',['lrm_message_info_get_peer_port',['../dd/d5f/group__api-lrm.html#ga81bfd2e6ce302f8b42cacf1c5947ad4f',1,'lrm_api.h']]],
+  ['lrm_5fmessage_5fread_68',['lrm_message_read',['../dd/d5f/group__api-lrm.html#gacae4b861d182f68bb7edeb8202510e9a',1,'lrm_api.h']]],
+  ['lrm_5fnetwork_5fconfigure_69',['lrm_network_configure',['../dd/d5f/group__api-lrm.html#ga08ac5e22b1619983b13709698911e686',1,'lrm_api.h']]],
+  ['lrm_5fnetwork_5fstart_70',['lrm_network_start',['../dd/d5f/group__api-lrm.html#gafb66edf2dfe4014d275297a7999074a1',1,'lrm_api.h']]],
+  ['lrm_5fnetwork_5fstop_71',['lrm_network_stop',['../dd/d5f/group__api-lrm.html#ga8dc2698dc22c22014d72d16b8c903c69',1,'lrm_api.h']]],
+  ['lrm_5fset_5frole_5fchanged_5fcallback_72',['lrm_set_role_changed_callback',['../dd/d5f/group__api-lrm.html#ga735ecea6f65788055af6d8cb81f43ca2',1,'lrm_api.h']]],
+  ['lrm_5fudp_5fbind_73',['lrm_udp_bind',['../d4/da5/group__api-lrm-udp.html#gae692d8268948885c9c521b2977feb671',1,'lrm_api.h']]],
+  ['lrm_5fudp_5fclose_74',['lrm_udp_close',['../d4/da5/group__api-lrm-udp.html#gab8c503be1be4289375fb79ba292df239',1,'lrm_api.h']]],
+  ['lrm_5fudp_5fconnect_75',['lrm_udp_connect',['../d4/da5/group__api-lrm-udp.html#ga75c890695b6039523ee4499efbae8cfb',1,'lrm_api.h']]],
+  ['lrm_5fudp_5fopen_76',['lrm_udp_open',['../d4/da5/group__api-lrm-udp.html#ga19bca0c1259649138b760b8dbd23c2d5',1,'lrm_api.h']]],
+  ['lrm_5fudp_5fsend_77',['lrm_udp_send',['../d4/da5/group__api-lrm-udp.html#gaadfaf33a37559a38110ce5eeb32054dc',1,'lrm_api.h']]]
+];

@@ -43,8 +43,11 @@ add_subdirectory(${FAMILY_COMMON_DIR}/hal)
 add_subdirectory(${TARGET_DIR})
 add_subdirectory(${FAMILY_COMMON_DIR}/cmsis)
 
+add_subdirectory(doc EXCLUDE_FROM_ALL)
+
 if (FEATURE_RAT_LORAWAN_ENABLE)
 add_subdirectory(${TARGET_DIR}/comms/lorawan)
+# add_subdirectory(${TARGET_DIR}/comms/SWL2001)
 endif()
 
 if (FEATURE_RAT_BLE_ENABLE)
@@ -52,7 +55,6 @@ add_subdirectory(${FAMILY_COMMON_DIR}/comms/ble)
 endif()
 
 if (FEATURE_RAT_LORA_MESH_ENABLE)
-add_subdirectory(${FAMILY_COMMON_DIR}/comms/lora_direct)
 add_subdirectory(${TARGET_DIR}/comms/lora_mesh)
 endif()
 

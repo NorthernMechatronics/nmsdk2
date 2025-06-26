@@ -40,6 +40,22 @@ extern "C" {
 #endif
 
 /**
+ * @file
+ *   This file implements the LoRa Mesh API.
+ *
+ */
+
+/**
+ * @addtogroup api-lrm
+ *
+ * @brief
+ *   This module includes functions that control the LoRa Mesh network
+ *
+ * @{
+ *
+ */
+
+/**
  * Represents an opaque type for the LoRa mesh context structure.
  */
 typedef struct {} lrm_context_t;
@@ -114,6 +130,16 @@ typedef void (*lrm_role_changed_callback)(lrm_context_t *context, lrm_device_rol
 
 #define LRM_RADIO_RSSI_INVALID 127      // Invalid or unknown RSSI value
 
+/**
+ * @addtogroup api-lrm-ipv6
+ *
+ * @brief
+ *   This module includes functions for IPv6 communications on the LoRa Mesh network
+ *
+ * @{
+ *
+ */
+
 #define LRM_IP6_ADDRESS_STRING_SIZE 40  // Recommended size for string representation of an IPv6 address.
 
 #define LRM_IP6_ADDRESS_SIZE 16
@@ -121,6 +147,11 @@ typedef void (*lrm_role_changed_callback)(lrm_context_t *context, lrm_device_rol
  * Represents an opaque type for an IPv6 address.
  */
 typedef struct {} lrm_ip6_address;
+
+/**
+ * @}
+ *
+ */
 
 /**
  * Represents an opaque (and empty) type for a LoRa mesh message buffer.
@@ -133,6 +164,16 @@ typedef struct {} lrm_message;
 typedef struct {} lrm_message_info;
 
 /**
+ * @addtogroup api-lrm-udp
+ *
+ * @brief
+ *   This module includes functions for UDP communications on the LoRa Mesh network
+ *
+ * @{
+ *
+ */
+
+/**
  * Represents an opaque type for a UDP socket.
  */
 typedef struct {uint8_t _reserved[64];} lrm_udp_socket;
@@ -141,6 +182,11 @@ typedef struct {uint8_t _reserved[64];} lrm_udp_socket;
  * This callback allows LoRa mesh to inform the application of a received UDP message.
  */
 typedef void (*lrm_udp_receive_callback)(void *context, lrm_message *message, const lrm_message_info *message_info);
+
+/**
+ * @}
+ *
+ */
 
 typedef int (*lrm_cli_output_callback)(void *context, const char *fmt, va_list args);
 
@@ -250,6 +296,13 @@ bool lrm_is_network_started(lrm_context_t *context);
  */
 lrm_device_role_e lrm_get_device_role(lrm_context_t *context);
 
+/**
+ * @addtogroup api-lrm-ipv6
+ *
+ * @{
+ *
+ */
+
 typedef enum {
     LRM_IP6_ADDR_TYPE_LINK_LOCAL,
     LRM_IP6_ADDR_TYPE_ROUTING_LOCATOR,
@@ -267,6 +320,32 @@ typedef enum {
  * @retval LRM_ERROR_FAILED Failed to retrieve the address.
  */
 lrm_error_e lrm_ip6_address_get(lrm_context_t *context, lrm_ip6_addr_type_e addr_type, const lrm_ip6_address *(*addr));
+
+/**
+ * Converts a given IPv6 address to a human-readable string.
+ *
+ * The IPv6 address string is formatted as 16 hex values separated by ':' (i.e., "%x:%x:%x:...:%x").
+ *
+ * If the resulting string does not fit in @p buffer (within its @p size characters), the string will be truncated
+ * but the outputted string is always null-terminated.
+ *
+ * @param[in]  address  A pointer to an IPv6 address (MUST NOT be NULL).
+ * @param[out] buffer   A pointer to a char array to output the string (MUST NOT be NULL).
+ * @param[in]  size     The size of @p buffer (in bytes). Recommended to use `LRM_IP6_ADDRESS_STRING_SIZE`.
+ */
+void lrm_ip6_address_to_string(const lrm_ip6_address *address, char *buffer, uint16_t size);
+
+/**
+ * @}
+ *
+ */
+
+/**
+ * @addtogroup api-lrm-udp
+ *
+ * @{
+ *
+ */
 
 /**
  * Open a LoRa mesh UDP socket.
@@ -338,18 +417,9 @@ lrm_error_e lrm_udp_connect(lrm_context_t *context, lrm_udp_socket *socket, char
 lrm_error_e lrm_udp_send(lrm_context_t *context, lrm_udp_socket *socket, char *host, uint16_t port, void *buf, size_t len);
 
 /**
- * Converts a given IPv6 address to a human-readable string.
+ * @}
  *
- * The IPv6 address string is formatted as 16 hex values separated by ':' (i.e., "%x:%x:%x:...:%x").
- *
- * If the resulting string does not fit in @p buffer (within its @p size characters), the string will be truncated
- * but the outputted string is always null-terminated.
- *
- * @param[in]  address  A pointer to an IPv6 address (MUST NOT be NULL).
- * @param[out] buffer   A pointer to a char array to output the string (MUST NOT be NULL).
- * @param[in]  size     The size of @p buffer (in bytes). Recommended to use `LRM_IP6_ADDRESS_STRING_SIZE`.
  */
-void lrm_ip6_address_to_string(const lrm_ip6_address *address, char *buffer, uint16_t size);
 
 /**
  * Get the peer IPv6 address.
@@ -429,6 +499,9 @@ typedef enum
 lrm_error_e lrm_radio_get_cfg(lrm_context_t *context, lrm_radio_cfg_e cfg, int32_t *value);
 lrm_error_e lrm_radio_set_cfg(lrm_context_t *context, lrm_radio_cfg_e cfg, int32_t value);
 
+lrm_error_e lrm_radio_start(lrm_context_t *context);
+lrm_error_e lrm_radio_stop(lrm_context_t *context);
+
 void lrm_cli_init(lrm_context_t *context, lrm_cli_output_callback callback, void *callback_context);
 void lrm_cli_input_line(lrm_context_t *context, bool no_echo, char *fmt, ...);
 
@@ -451,6 +524,11 @@ uint16_t lrm_plat_ble_gatt_mtu_get_max(void);
 void lrm_plat_ble_gatt_on_mtu_update(lrm_context_t *context, uint16_t mtu);
 void lrm_plat_ble_gatt_server_indicate_cnf(lrm_context_t *context, uint16_t connection_id, uint16_t tx_handle);
 void lrm_plat_ble_gatt_server_on_write_request(lrm_context_t *context, uint16_t handle, uint8_t *buf, uint16_t len);
+
+/**
+ * @}
+ *
+ */
 
 #ifdef __cplusplus
 }
