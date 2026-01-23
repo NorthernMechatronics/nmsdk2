@@ -263,9 +263,6 @@ void SX126xIoIrqInit(DioIrqHandler dioIrq)
     SX126xL3RadioIrqHandle = dioIrq;
     am_hal_gpio_interrupt_register(RADIO_DIO1, SX126xIoIrqHandler);
 
-    // am_hal_gpio_interrupt_clear(AM_HAL_GPIO_BIT(RADIO_DIO1));
-    // am_hal_gpio_interrupt_enable(AM_HAL_GPIO_BIT(RADIO_DIO1));
-
     AM_HAL_GPIO_MASKCREATE(radio_dio_interrupt);
     AM_HAL_GPIO_MASKBITSMULT(pradio_dio_interrupt, RADIO_DIO1);
     am_hal_gpio_interrupt_clear(pradio_dio_interrupt);
@@ -276,14 +273,6 @@ void SX126xIoIrqInit(DioIrqHandler dioIrq)
 
 void SX126xIoDeInit(void)
 {
-    // am_hal_gpio_interrupt_disable(AM_HAL_GPIO_BIT(RADIO_DIO1));
-    // am_hal_gpio_interrupt_clear(AM_HAL_GPIO_BIT(RADIO_DIO1));
-
-    AM_HAL_GPIO_MASKCREATE(radio_dio_interrupt);
-    AM_HAL_GPIO_MASKBITSMULT(pradio_dio_interrupt, RADIO_DIO1);
-    am_hal_gpio_interrupt_disable(pradio_dio_interrupt);
-    am_hal_gpio_interrupt_clear(pradio_dio_interrupt);
-
     am_hal_iom_disable(SX126xHandle);
     am_hal_iom_power_ctrl(SX126xHandle, AM_HAL_SYSCTRL_DEEPSLEEP, false);
     am_hal_iom_uninitialize(SX126xHandle);

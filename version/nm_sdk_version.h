@@ -37,8 +37,8 @@ extern "C"
 {
 #endif
 
-#define NM_SDK_VERSION_MAJ  1
-#define NM_SDK_VERSION_MIN  6
+#define NM_SDK_VERSION_MAJ  2
+#define NM_SDK_VERSION_MIN  1
 #define NM_SDK_VERSION_REV  0
 
 extern const char nm_sdk_version[];

@@ -15,7 +15,7 @@
 
 //*****************************************************************************
 //
-// Copyright (c) 2023, Ambiq Micro, Inc.
+// Copyright (c) 2025, Ambiq Micro, Inc.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-// This is part of revision release_sdk_3_1_1-10cda4b5e0 of the AmbiqSuite Development Package.
+// This is part of revision release_sdk5p0p0-5f68a8286b of the AmbiqSuite Development Package.
 //
 //*****************************************************************************
 #ifndef AM_UTIL_STRING_H
@@ -57,7 +57,6 @@
 extern "C"
 {
 #endif
-
 
 //*****************************************************************************
 //
@@ -82,14 +81,12 @@ extern "C"
 //
 #define MINIMIZE_CATTR_TABLE    0
 
-
 //*****************************************************************************
 //
 // Globals
 //
 //*****************************************************************************
 extern const uint8_t am_cattr[];
-
 
 //*****************************************************************************
 //
@@ -213,6 +210,7 @@ extern char *am_util_string_strcpy(char *pcDst, const char *pcSrc);
 //!
 //! @param pcDst pointer to the destination string.
 //! @param pcSrc pointer to the source string to be copied to pcDst.
+//! @param uNum  length of string
 //!
 //! This function copies uNum characters of pcSrc to the location specified
 //!  by pcDst.

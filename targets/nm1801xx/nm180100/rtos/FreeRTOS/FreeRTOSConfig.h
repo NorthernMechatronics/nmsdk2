@@ -77,6 +77,9 @@ extern "C"
 #define configUSE_NEWLIB_REENTRANT              1
 #define configENABLE_BACKWARD_COMPATIBILITY     0
 
+#define configUSE_TASK_NOTIFICATIONS            1
+#define configTASK_NOTIFICATION_ARRAY_ENTRIES   8
+
 /* Hook function related definitions. */
 #define configUSE_IDLE_HOOK                     0
 #define configUSE_TICK_HOOK                     0

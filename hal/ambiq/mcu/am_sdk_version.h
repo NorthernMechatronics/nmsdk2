@@ -12,7 +12,7 @@
 
 //*****************************************************************************
 //
-// Copyright (c) 2023, Ambiq Micro, Inc.
+// Copyright (c) 2025, Ambiq Micro, Inc.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-// This is part of revision release_sdk_3_1_1-10cda4b5e0 of the AmbiqSuite Development Package.
+// This is part of revision release_sdk5p0p0-5f68a8286b of the AmbiqSuite Development Package.
 //
 //*****************************************************************************
 #ifndef AM_SDK_VERSION_H
@@ -66,19 +66,35 @@ extern "C"
 #ifndef AM_HAL_VERSION_MAJ
 #if defined(AM_PART_APOLLO3_API)
 #define AM_HAL_VERSION_MAJ      3
-#define AM_HAL_VERSION_MIN      1
-#define AM_HAL_VERSION_REV      1
+#define AM_HAL_VERSION_MIN      2
+#define AM_HAL_VERSION_REV      0
 #elif defined(AM_PART_APOLLO4_API)
 #define AM_HAL_VERSION_MAJ      4
-#define AM_HAL_VERSION_MIN      3
+#define AM_HAL_VERSION_MIN      5
+#define AM_HAL_VERSION_REV      0
+#elif defined(AM_PART_APOLLO5_API)
+#define AM_HAL_VERSION_MAJ      5
+#define AM_HAL_VERSION_MIN      0
 #define AM_HAL_VERSION_REV      0
 #else
-#warning Please define AM_HAL_VERSION_MAJ, AM_HAL_VERSION_MIN, AM_HAL_VERSION_REV
+#define AM_HAL_VERSION_MAJ      0
+#define AM_HAL_VERSION_MIN      0
+#define AM_HAL_VERSION_REV      0
 #endif
 #endif // AM_HAL_VERSION_MAJ
+
+#if (AM_HAL_VERSION_MAJ == 0)
+#error AM_HAL_VERSION_MAJ cannot be defined as 0.
+#endif
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif // AM_SDK_VERSION_H
+//*****************************************************************************
+//
+// End Doxygen group.
+//! @}
+//
+//*****************************************************************************

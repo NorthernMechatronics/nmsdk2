@@ -43,9 +43,9 @@ extern "C" {
 
 #define WSF_HEAP_SIZE           (0x8000)
 
-#define WSF_NVM_NUM_OF_PAGES    (4)
+#define WSF_NVM_NUM_OF_PAGES    (2)
 #define WSF_NVM_PAGE_SIZE       (AM_HAL_FLASH_PAGE_SIZE)
-#define WSF_NVM_START_ADDR      (AM_HAL_FLASH_LARGEST_VALID_ADDR + 1 - ((WSF_NVM_NUM_OF_PAGES + 4) * AM_HAL_FLASH_PAGE_SIZE))
+#define WSF_NVM_START_ADDR      (AM_HAL_FLASH_TOTAL_SIZE - ((WSF_NVM_NUM_OF_PAGES + 4) * AM_HAL_FLASH_PAGE_SIZE))
 #define WSF_FLASH_WORD_SIZE     (4)
 
 #ifdef __cplusplus

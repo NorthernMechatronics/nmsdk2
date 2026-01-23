@@ -1,0 +1,9 @@
+/build/
+__pycache__/
+*.pyc
+*.d
+*.o
+*.axf
+*.bin
+*.lst
+*.map

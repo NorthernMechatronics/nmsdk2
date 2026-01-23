@@ -14,7 +14,7 @@
 
 //*****************************************************************************
 //
-// Copyright (c) 2023, Ambiq Micro, Inc.
+// Copyright (c) 2025, Ambiq Micro, Inc.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-// This is part of revision release_sdk_3_1_1-10cda4b5e0 of the AmbiqSuite Development Package.
+// This is part of revision release_sdk5p0p0-5f68a8286b of the AmbiqSuite Development Package.
 //
 //*****************************************************************************
 #ifndef AM_UTIL_H
@@ -68,15 +68,19 @@
 #include "am_util_debug.h"
 #include "am_util_delay.h"
 #include "am_util_id.h"
-#include "am_util_regdump.h"
 #include "am_util_stdio.h"
 #include "am_util_string.h"
 #include "am_util_time.h"
 
 #if defined(AM_PART_APOLLO3_API)
 #include "am_util_ble.h"
+#include "am_util_regdump.h"
 #elif defined(AM_PART_APOLLO4_API)
 #include "am_util_ble_cooper.h"
+#endif
+
+#if defined(AM_PART_APOLLO5_API)
+#include "am_util_pmu.h"
 #endif
 
 #endif  // AM_UTIL_H

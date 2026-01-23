@@ -69,6 +69,17 @@ typedef struct {
 static RtcTimerContext_t RtcTimerContext;
 static uint32_t rtc_backup[2];
 
+void am_stimer_isr(void)
+{
+    if(am_hal_stimer_int_status_get(true) & AM_HAL_STIMER_INT_OVERFLOW)
+    {
+        //clear isr
+        am_hal_stimer_int_clear(AM_HAL_STIMER_INT_OVERFLOW);
+        //increment RTC backup seconds
+        rtc_backup[0] += 1 << ( 32 - CLOCK_SHIFT);
+    }
+}
+
 void am_stimer_cmpr2_isr(void)
 {
     am_hal_stimer_int_clear(AM_HAL_STIMER_INT_COMPAREC);
@@ -77,12 +88,10 @@ void am_stimer_cmpr2_isr(void)
     am_hal_stimer_int_clear(AM_HAL_STIMER_INT_COMPARED);
 
     if (RtcTimerContext.Running) {
-        if (am_hal_stimer_counter_get() >= RtcTimerContext.Alarm_Ticks) {
-            RtcTimerContext.Running = false;
-            // turn on the radio first as TimerIrqHandler accesses the radio
-            lorawan_wake_on_timer_irq();
-            TimerIrqHandler();
-        }
+        RtcTimerContext.Running = false;
+        // turn on the radio first as TimerIrqHandler accesses the radio
+        lorawan_wake_on_timer_irq();
+        TimerIrqHandler();
     }
 }
 
@@ -91,12 +100,10 @@ void am_stimer_cmpr3_isr(void)
     am_hal_stimer_int_clear(AM_HAL_STIMER_INT_COMPARED);
 
     if (RtcTimerContext.Running) {
-        if (am_hal_stimer_counter_get() >= RtcTimerContext.Alarm_Ticks) {
-            RtcTimerContext.Running = false;
-            // turn on the radio first as TimerIrqHandler accesses the radio
-            lorawan_wake_on_timer_irq();
-            TimerIrqHandler();
-        }
+        RtcTimerContext.Running = false;
+        // turn on the radio first as TimerIrqHandler accesses the radio
+        lorawan_wake_on_timer_irq();
+        TimerIrqHandler();
     }
 }
 
@@ -105,8 +112,10 @@ void RtcInit(void)
     if (RtcInitialized == false) {
         am_hal_stimer_int_enable(AM_HAL_STIMER_INT_COMPAREC);
         am_hal_stimer_int_enable(AM_HAL_STIMER_INT_COMPARED);
+        am_hal_stimer_int_enable(AM_HAL_STIMER_INT_OVERFLOW);
         NVIC_EnableIRQ(STIMER_CMPR2_IRQn);
         NVIC_EnableIRQ(STIMER_CMPR3_IRQn);
+        NVIC_EnableIRQ(STIMER_IRQn);
 
         uint32_t oldCfg = am_hal_stimer_config(AM_HAL_STIMER_CFG_FREEZE);
 

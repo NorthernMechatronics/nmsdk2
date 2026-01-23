@@ -1,0 +1,22 @@
+cmake_policy(SET CMP0048 NEW)
+cmake_minimum_required(VERSION 3.13.0)
+
+
+set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/cmsis-dsp.cmake)
+
+project(CMSIS-DSP)
+
+set(MVEF ON CACHE BOOL "")
+set(MVEI ON CACHE BOOL "")
+set(HELIUM ON CACHE BOOL "")
+set(MVEFLOAT16 OFF CACHE BOOL "")
+set(DISABLEFLOAT16 ON CACHE BOOL "")
+set(AUTOVECTORIZE ON CACHE BOOL "")
+
+set(CMSISCORE ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../cmsis/CMSIS_6/CMSIS/Core)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../../../../cmsis/CMSIS-DSP ${PROJECT_BINARY_DIR}/cmsis/CMSIS-DSP)
+
+install (
+    TARGETS CMSISDSP
+    DESTINATION ${PROJECT_SOURCE_DIR}/lib
+)

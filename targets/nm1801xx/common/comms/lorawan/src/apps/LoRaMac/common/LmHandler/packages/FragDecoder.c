@@ -332,6 +332,12 @@ int32_t FragDecoderProcess( uint16_t fragCounter, uint8_t *rawData )
 
         // Update the FragDecoder.FragNbMissingIndex with the loosing frame
         FragFindMissingFrags( fragCounter );
+
+        if( ( FragDecoder.Status.FragNbLost == 0 ) && ( fragCounter == FragDecoder.FragNb ) )
+        { 
+            // the case : all the M(FragNb) first rows have been transmitted with no error
+            return FragDecoder.Status.FragNbLost;
+        }
     }
     else
     {
@@ -345,12 +351,6 @@ int32_t FragDecoderProcess( uint16_t fragCounter, uint8_t *rawData )
 
         // In case of the end of true data is missing
         FragFindMissingFrags( fragCounter );
-
-        if( FragDecoder.Status.FragNbLost == 0 )
-        { 
-            // the case : all the M(FragNb) first rows have been transmitted with no error
-            return FragDecoder.Status.FragNbLost;
-        }
 
         // fragCounter - FragDecoder.FragNb
         FragGetParityMatrixRow( fragCounter - FragDecoder.FragNb, FragDecoder.FragNb, matrixRow );
@@ -463,6 +463,7 @@ int32_t FragDecoderProcess( uint16_t fragCounter, uint8_t *rawData )
                         SetRow( FragDecoder.File, matrixDataTemp, li, FragDecoder.FragSize );
 #endif
                     }
+                    FragDecoder.Status.FragNbLost = 0;      //Report none lost after successful recovery
                     return FragDecoder.Status.FragNbLost;
                 }
                 else
@@ -585,7 +586,7 @@ static void FragGetParityMatrixRow( int32_t n, int32_t m, uint8_t *matrixRow )
     }
 
     x = 1 + ( 1001 * n );
-    for( uint32_t i = 0; i < ( ( m >> 3 ) + 1 ); i++ )
+    for( int32_t i = 0; i < ( ( m >> 3 ) + 1 ); i++ )
     {
         matrixRow[i] = 0;
     }
