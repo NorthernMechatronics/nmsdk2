@@ -81,6 +81,11 @@ typedef enum
     LRM_ERROR_NO_BUFS = 3,
 
     /**
+     * Device or service busy.
+     */
+    LRM_ERROR_BUSY = 5,
+
+    /**
      * Failed to parse message.
      */
     LRM_ERROR_PARSE = 6,
@@ -95,6 +100,10 @@ typedef enum
      */
     LRM_ERROR_INVALID_STATE = 13,
 
+    /**
+     * Operation is already in progress.
+     */
+    LRM_ERROR_ALREADY = 24,
 } lrm_error_e;
 
 typedef struct
@@ -118,6 +127,7 @@ typedef enum
     LRM_DEVICE_ROLE_CHILD    = 2,   // The Child role.
     LRM_DEVICE_ROLE_ROUTER   = 3,   // The Router role.
     LRM_DEVICE_ROLE_LEADER   = 4,   // The Leader role.
+    LRM_DEVICE_ROLE_PAUSED   = 5,
 } lrm_device_role_e;
 
 /**
@@ -282,6 +292,36 @@ lrm_error_e lrm_network_stop(lrm_context_t *context);
  *
  */
 bool lrm_is_network_started(lrm_context_t *context);
+
+/**
+ * Pause the LoRa mesh network.
+ *
+ * @param[in]  context          A pointer to a LoRa mesh context.
+ *
+ * @retval LRM_ERROR_NONE           Successfully paused the network.
+ * @retval LRM_ERROR_INVALID_STATE  The network interface was not not up.
+ */
+lrm_error_e lrm_network_pause(lrm_context_t *context);
+
+/**
+ * Resume the LoRa mesh network.
+ *
+ * @param[in]  context          A pointer to a LoRa mesh context.
+ *
+ * @retval LRM_ERROR_NONE           Successfully resumed the network.
+ * @retval LRM_ERROR_INVALID_STATE  The network interface was not not up.
+ */
+lrm_error_e lrm_network_resume(lrm_context_t *context);
+
+/**
+ * Indicates whether a LoRa mesh network is paused or not.
+ *
+ * @param[in]  context          A pointer to a LoRa mesh context.
+ *
+ * @returns TRUE if a LoRa mesh network is paused, FALSE otherwise.
+ *
+ */
+bool lrm_is_network_paused(lrm_context_t *context);
 
 /**
  * Get the device role.

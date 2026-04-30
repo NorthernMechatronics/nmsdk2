@@ -96,7 +96,22 @@ am_hal_clkgen_control(am_hal_clkgen_control_e eControl, void *pArgs)
             break;
 
         case AM_HAL_CLKGEN_CONTROL_XTAL_START:
+            if (CLKGEN->OCTRL_b.STOPXT == CLKGEN_OCTRL_STOPXT_EN)
+            {
+                break;
+            }
+
+            if (APOLLO3_GE_B0)
+            {
+                MCUCTRL->XTALCTRL_b.XTALICOMPTRIM = 1;
+            }
             CLKGEN->OCTRL_b.STOPXT = CLKGEN_OCTRL_STOPXT_EN;
+            if (APOLLO3_GE_B0)
+            {
+                am_hal_flash_delay(FLASH_CYCLES_US(1000000));
+                MCUCTRL->XTALCTRL_b.XTALICOMPTRIM = 3;
+                am_hal_flash_delay(FLASH_CYCLES_US(1000));
+            }
             break;
 
         case AM_HAL_CLKGEN_CONTROL_LFRC_STOP:
