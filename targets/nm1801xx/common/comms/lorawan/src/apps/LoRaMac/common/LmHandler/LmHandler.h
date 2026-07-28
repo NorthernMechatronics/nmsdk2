@@ -217,6 +217,10 @@ typedef struct LmHandlerCallbacks_s
      */
     void ( *OnSysTimeUpdate )( void );
 #endif
+    /*!
+     * Notifies upper layer that a frame is about to be transmitted
+     */
+    void ( *OnTxStart )( void );
 }LmHandlerCallbacks_t;
 
 /*!

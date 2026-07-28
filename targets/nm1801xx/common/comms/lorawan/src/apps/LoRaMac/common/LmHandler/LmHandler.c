@@ -460,6 +460,13 @@ static void LmHandlerJoinRequest( bool isOtaa )
         // Update commissioning parameters activation type variable.
         CommissioningParams.IsOtaaActivation = false;
     }
+    
+    // Turn on the radio
+    if( LmHandlerCallbacks->OnTxStart != NULL )
+    {
+        LmHandlerCallbacks->OnTxStart( );
+    }
+
     // Starts the join procedure
     LoRaMacStatus_t status = LoRaMacMlmeRequest( &mlmeReq );
     if( LmHandlerCallbacks->OnMacMlmeRequest != NULL )
@@ -510,6 +517,12 @@ LmHandlerErrorStatus_t LmHandlerSend( LmHandlerAppData_t *appData, LmHandlerMsgT
         // The network isn't joined, try again.
         LmHandlerJoinRequest( CommissioningParams.IsOtaaActivation );
         return LORAMAC_HANDLER_ERROR;
+    }
+
+    // Turn on the radio.
+    if( LmHandlerCallbacks->OnTxStart != NULL )
+    {
+        LmHandlerCallbacks->OnTxStart( );
     }
 
     TxParams.MsgType = isTxConfirmed;
@@ -680,6 +693,13 @@ LmHandlerErrorStatus_t LmHandlerRequestClass( DeviceClass_t newClass )
                 // {
                 //     errorStatus = LORAMAC_HANDLER_ERROR;
                 // }
+
+                // Turn on the radio.
+                if( LmHandlerCallbacks->OnTxStart != NULL )
+                {
+                    LmHandlerCallbacks->OnTxStart( );
+                }
+
                 // Switch is instantaneous
                 mibReq.Param.Class = CLASS_C;
                 if( LoRaMacMibSetRequestConfirm( &mibReq ) == LORAMAC_STATUS_OK )

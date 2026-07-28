@@ -3,10 +3,13 @@ cmake_minimum_required(VERSION 3.13.0)
 
 if (NM_TARGET STREQUAL "nm180100")
     set(NM_FAMILY "nm1801xx" CACHE PATH "nm1801xx family")
+    set(CMSIS_SYSTEM_SRC "system_apollo3.c" CACHE PATH "Apollo3")
 elseif (NM_TARGET STREQUAL "nm180110")
     set(NM_FAMILY "nm1801xx" CACHE PATH "nm1801xx family")
+    set(CMSIS_SYSTEM_SRC "system_apollo3p.c" CACHE PATH "Apollo3 Plus")
 elseif (NM_TARGET STREQUAL "apollo510")
     set(NM_FAMILY "cortex-m55" CACHE PATH "cortex-m55 family")
+    set(CMSIS_SYSTEM_SRC "system_apollo510.c" CACHE PATH "Apollo510")
     set(FEATURE_RAT_BLE_ENABLE OFF CACHE BOOL "" FORCE)
     set(FEATURE_RAT_LORAWAN_ENABLE OFF CACHE BOOL "" FORCE)
     set(FEATURE_RAT_LORA_MESH_ENABLE OFF CACHE BOOL "" FORCE)
@@ -43,7 +46,12 @@ project(nmsdk2)
 add_definitions(-DNMI)
 
 set(TARGET_NEWLIB_STUB_SRC ${PROJECT_SOURCE_DIR}/targets/${NM_FAMILY}/common/stub.c CACHE PATH "newlib stub file")
-set(TARGET_STARTUP_SRC ${PROJECT_SOURCE_DIR}/targets/${NM_FAMILY}/${NM_TARGET}/startup_gcc.c ${PROJECT_SOURCE_DIR}/hal/ambiq/CMSIS/AmbiqMicro/Source/system_apollo510.c CACHE PATH "startup file")
+
+set(TARGET_STARTUP_SRC
+    ${PROJECT_SOURCE_DIR}/targets/${NM_FAMILY}/${NM_TARGET}/startup_gcc.c
+    ${PROJECT_SOURCE_DIR}/hal/ambiq/CMSIS/AmbiqMicro/Source/${CMSIS_SYSTEM_SRC}
+    CACHE PATH "startup file")
+
 set(TARGET_LINK_SCRIPT ${PROJECT_SOURCE_DIR}/targets/${NM_FAMILY}/${NM_TARGET}/target.ld CACHE PATH "link script")
 set(SDK_DIR ${PROJECT_SOURCE_DIR} CACHE PATH "SDK directory")
 
