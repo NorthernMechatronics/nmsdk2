@@ -454,7 +454,7 @@ lrm_error_e lrm_udp_connect(lrm_context_t *context, lrm_udp_socket *socket, char
  * @retval LRM_ERROR_PARSE          Failed to parse host.
  * @retval LRM_ERROR_NO_BUFS        Insufficient available buffer to add the UDP and IPv6 headers.
  */
-lrm_error_e lrm_udp_send(lrm_context_t *context, lrm_udp_socket *socket, char *host, uint16_t port, void *buf, size_t len);
+lrm_error_e lrm_udp_send(lrm_context_t *context, lrm_udp_socket *socket, char *host, uint16_t port, const void *buf, size_t len);
 
 /**
  * @}

@@ -101,6 +101,9 @@ function build_target () {
     fi
   fi
 
+  mkdir -p ${BUILD_DIR}
+  cd ${BUILD_DIR}
+
   cmake \
     -DCMAKE_BUILD_TYPE=$variant \
     -DNM_TARGET=$local_target_name \
@@ -114,21 +117,21 @@ function build_target () {
     -DBUILD_RTOS=$f_os \
     -DBUILD_HAL=$f_hal \
     -DBUILD_TFLM=$f_tflm \
-    -S . -B ${BUILD_DIR} -G "Unix Makefiles"
+    -S ../../ -B . -G "Unix Makefiles"
   if [ $? -ne 0 ]; then
     echo "Configuration error"
     exit 1
   fi
   echo "$local_target_name $variant Config Completed"
 
-  cmake --build ${BUILD_DIR} -j$numthread
+  cmake --build . -j$numthread
   if [ $? -ne 0 ]; then
     echo "Build error"
     exit 1
   fi
   echo "$local_target_name $variant Build Completed"
 
-  cmake --install ${BUILD_DIR}
+  cmake --install .
   if [ $? -ne 0 ]; then
     echo "Install error"
     exit 1
